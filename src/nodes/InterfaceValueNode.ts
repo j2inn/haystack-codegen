@@ -18,7 +18,7 @@ export class InterfaceValueNode implements Node {
 
 	public readonly newLines = 0
 
-	public constructor(name: string, kind: Kind, optional: boolean = false) {
+	public constructor(name: string, kind: Kind, optional = false) {
 		this.name = name
 		this.kind = kind
 		this.optional = optional
