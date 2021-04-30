@@ -20,7 +20,13 @@ export class HaystackCoreImportNode implements Node {
 
 	public generate(out: (code: string) => void): void {
 		if (this.types.size) {
-			out(`import { ${[...this.types].join(', ')} } from 'haystack-core'`)
+			const types = [...this.types.values()]
+
+			out('import {')
+			types.forEach((type) =>
+				out(`	${type}${types.length === 1 ? '' : ','}`)
+			)
+			out(`} from 'haystack-core'`)
 		}
 	}
 }

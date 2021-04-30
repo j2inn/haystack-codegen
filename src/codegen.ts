@@ -3,33 +3,58 @@
  */
 
 import colors from 'colors/safe'
-import { readFile } from 'fs'
+import { CodeGenerator } from './CodeGenerator'
+import { resolveDefaultNamespace } from './nodes/util'
+import { Command } from 'commander'
 import path from 'path'
 import { promisify } from 'util'
-import { ZincReader, HNamespace, HGrid, HDict } from 'haystack-core'
-import { CodeGenerator } from './CodeGenerator'
+import { writeFile, stat, mkdir } from 'fs'
 
-const readFileAsync = promisify(readFile)
+const writeFileAsync = promisify(writeFile)
+const statAsync = promisify(stat)
+const mkdirAsync = promisify(mkdir)
 
 function log(message: string): void {
 	console.log(message)
 }
 
-async function resolveNamespace(): Promise<HNamespace> {
-	const defsBuf = await readFileAsync(path.join(__dirname, '../rc/defs.zinc'))
-	const grid = ZincReader.readValue(defsBuf.toString('utf-8')) as HGrid
-	return new HNamespace(grid)
-}
+export async function codegen(): Promise<void> {
+	const program = new Command()
 
-export async function codegen(names: string[]): Promise<void> {
+	const { defs, file } = program
+		.description('Generate TypeScript code from haystack v4 defs')
+		.option(
+			'-d, --defs <defs...>',
+			'a space separated list of defs to generate code from'
+		)
+		.option(
+			'-f, --file <file>',
+			'the TypeScript file to generate',
+			'./src/haystack/types.ts'
+		)
+		.parse(process.argv)
+		.opts()
+
+	if (process.argv.length < 3 || !defs || !defs.length) {
+		program.help()
+		return
+	}
+
 	log(
-		colors.green('Creating TypeScript from defs for ') +
-			colors.yellow(names.join(', '))
+		colors.green('Creating TypeScript for ') +
+			colors.yellow(defs.join(', '))
 	)
 
-	log(colors.green('  Reading defs...'))
-	const namespace = await resolveNamespace()
+	log(colors.green('  Reading default namespace'))
+	const namespace = await resolveDefaultNamespace()
 
 	log(colors.green('  Generating TypeScript...'))
-	console.log(new CodeGenerator(names, namespace).generate())
+	const ts = new CodeGenerator(defs, namespace).generate()
+
+	log(colors.green('  Writing file ') + colors.yellow(file))
+	const tsFile = path.resolve(file)
+	await mkdirAsync(path.dirname(tsFile), { recursive: true })
+	await writeFileAsync(tsFile, ts)
+
+	log(colors.green('  Successfully created TypeScript file!'))
 }

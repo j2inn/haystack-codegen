@@ -22,7 +22,13 @@ import {
 	HTime,
 	HXStr,
 	HNamespace,
+	ZincReader,
 } from 'haystack-core'
+import { readFile } from 'fs'
+import path from 'path'
+import { promisify } from 'util'
+
+const readFileAsync = promisify(readFile)
 
 const RESERVED_NAMES = ['Date']
 
@@ -146,4 +152,17 @@ export function generateNode(node: Node): string {
 		str += code + '\n'
 	})
 	return str
+}
+
+/**
+ * Resolve the default namespace from defs distributed with the project.
+ *
+ * @returns The default namespace.
+ */
+export async function resolveDefaultNamespace(): Promise<HNamespace> {
+	const defsBuf = await readFileAsync(
+		path.join(__dirname, '../../rc/defs.zinc')
+	)
+	const grid = ZincReader.readValue(defsBuf.toString('utf-8')) as HGrid
+	return new HNamespace(grid)
 }

@@ -14,27 +14,44 @@ export class InterfaceNode implements Node {
 
 	public readonly name: string
 
+	public readonly doc: string
+
 	public readonly extend: string[]
 
 	public readonly values: InterfaceValueNode[]
 
 	public newLines = 1
 
-	public constructor(
-		def: string,
-		name: string,
-		extend: string[] = [],
-		values: InterfaceValueNode[] = []
-	) {
+	public constructor({
+		def,
+		name,
+		doc,
+		extend,
+		values,
+	}: {
+		def: string
+		name: string
+		doc?: string
+		extend?: string[]
+		values?: InterfaceValueNode[]
+	}) {
 		this.def = def
 		this.name = name
-		this.extend = extend
-		this.values = values
+		this.doc = doc ?? ''
+		this.extend = extend ?? []
+		this.values = values ?? []
 	}
 
 	public generate(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.def}`)
+
+		if (this.doc.trim()) {
+			out(' *')
+			this.doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
+			out(' *')
+		}
+
 		out(' */')
 
 		let code = `export interface ${this.name} extends ${
@@ -45,10 +62,12 @@ export class InterfaceNode implements Node {
 			code += `, ${this.extend[i]}`
 		}
 
-		code += ' {'
+		code += ` {${this.values.length ? '' : '}'}`
 		out(code)
-		generateFromNodes(out, this.values)
-		out('}')
+		if (this.values.length) {
+			generateFromNodes(out, this.values)
+			out('}')
+		}
 	}
 
 	public get types(): string[] {

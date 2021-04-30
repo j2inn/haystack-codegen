@@ -11,10 +11,13 @@ describe('NamespaceNode', function (): void {
 		it('generates a namespace', function (): void {
 			expect(
 				generateNode(
-					new NamespaceNode('Test', new InterfaceNode('node', 'Node'))
+					new NamespaceNode(
+						'Test',
+						new InterfaceNode({ def: 'node', name: 'Node' })
+					)
 				)
 			).toBe(
-				'export namespace Test {\n  /**\n   * node\n   */\n  export interface Node extends HDict {\n  }\n}\n'
+				'export namespace Test {\n  /**\n   * node\n   */\n  export interface Node extends HDict {}\n}\n'
 			)
 		})
 	}) // #generate()

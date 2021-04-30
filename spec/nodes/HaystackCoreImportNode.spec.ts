@@ -13,14 +13,14 @@ describe('HaystackCoreImportNode', function (): void {
 
 		it('generates an import statement for a type', function (): void {
 			expect(generateNode(new HaystackCoreImportNode(['HStr']))).toBe(
-				"import { HStr } from 'haystack-core'\n"
+				"import {\n	HStr\n} from 'haystack-core'\n"
 			)
 		})
 
 		it('generates an import statement from multiple types', function (): void {
 			expect(
 				generateNode(new HaystackCoreImportNode(['HStr', 'HDate']))
-			).toBe("import { HStr, HDate } from 'haystack-core'\n")
+			).toBe("import {\n	HStr,\n	HDate,\n} from 'haystack-core'\n")
 		})
 	}) // #generate()
 })

@@ -2,7 +2,7 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { HNamespace, HDict } from 'haystack-core'
+import { HNamespace, HStr } from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
@@ -40,7 +40,13 @@ export class CodeGenerator {
 	private addInterfaceNode(doc: DocNode, name: string): void {
 		const tags = this.#namespace.tags(name)
 
-		const intNode = new InterfaceNode(name, makeTypeName(name))
+		const def = this.#namespace.byName(name)
+
+		const intNode = new InterfaceNode({
+			def: name,
+			name: makeTypeName(name),
+			doc: def?.get<HStr>('doc')?.value ?? '',
+		})
 
 		// Add everything this def extends from.
 		for (const sup of this.#namespace.superTypesOf(name)) {

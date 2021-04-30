@@ -10,12 +10,11 @@ import { generateNode } from '../../src/nodes/util'
 describe('InterfaceNode', function (): void {
 	describe('#generate()', function (): void {
 		it('generates an interface', function (): void {
-			const node = new InterfaceNode(
-				'test',
-				'Test',
-				[],
-				[new InterfaceValueNode('test', Kind.Bool)]
-			)
+			const node = new InterfaceNode({
+				def: 'test',
+				name: 'Test',
+				values: [new InterfaceValueNode('test', Kind.Bool)],
+			})
 
 			expect(generateNode(node)).toBe(
 				'/**\n * test\n */\nexport interface Test extends HDict {\n	test: HBool\n}\n'
@@ -23,12 +22,12 @@ describe('InterfaceNode', function (): void {
 		})
 
 		it('generates an interface that extends an interface', function (): void {
-			const node = new InterfaceNode(
-				'dog',
-				'Dog',
-				['Mammal'],
-				[new InterfaceValueNode('test', Kind.Bool)]
-			)
+			const node = new InterfaceNode({
+				def: 'dog',
+				name: 'Dog',
+				extend: ['Mammal'],
+				values: [new InterfaceValueNode('test', Kind.Bool)],
+			})
 
 			expect(generateNode(node)).toBe(
 				'/**\n * dog\n */\nexport interface Dog extends Mammal {\n	test: HBool\n}\n'
@@ -36,12 +35,12 @@ describe('InterfaceNode', function (): void {
 		})
 
 		it('generates an interface that extends multiple interfaces', function (): void {
-			const node = new InterfaceNode(
-				'dog',
-				'Dog',
-				['Mammal', 'Pug'],
-				[new InterfaceValueNode('test', Kind.Bool)]
-			)
+			const node = new InterfaceNode({
+				def: 'dog',
+				name: 'Dog',
+				extend: ['Mammal', 'Pug'],
+				values: [new InterfaceValueNode('test', Kind.Bool)],
+			})
 
 			expect(generateNode(node)).toBe(
 				'/**\n * dog\n */\nexport interface Dog extends Mammal, Pug {\n	test: HBool\n}\n'

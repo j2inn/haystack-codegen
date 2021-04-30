@@ -6,4 +6,4 @@
 
 import { codegen } from './codegen'
 
-codegen(['site'])
+codegen()
