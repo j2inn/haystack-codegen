@@ -11,7 +11,6 @@ import { promisify } from 'util'
 import { writeFile, stat, mkdir } from 'fs'
 
 const writeFileAsync = promisify(writeFile)
-const statAsync = promisify(stat)
 const mkdirAsync = promisify(mkdir)
 
 function log(message: string): void {

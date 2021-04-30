@@ -16,11 +16,11 @@ import { TypeGuardNode } from './TypeGuardNode'
  * This is the root node for a document.
  */
 export class DocNode implements Node {
-	readonly newLines = 0
+	public readonly newLines = 0
 
-	readonly comment = new DocCommentNode()
+	public readonly comment = new DocCommentNode()
 
-	readonly import = new HaystackCoreImportNode()
+	public readonly import = new HaystackCoreImportNode()
 
 	readonly #nodes: Map<
 		string,
