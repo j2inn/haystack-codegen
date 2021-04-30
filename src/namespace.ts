@@ -116,22 +116,29 @@ async function getPods(podDir: string): Promise<Pod[]> {
 	const fileNames = files.map((file) => file.substring(0, file.length - 4))
 	const zips = files.map((file) => new AdmZip(path.join(podDir, file)))
 
-	return fileNames.map(
-		(fileName, i): Pod => ({
-			name: fileName,
-			getAsset: (path: string): string | undefined => {
-				try {
-					return zips[i].readAsText(path)
-				} catch (err) {
-					return undefined
-				}
-			},
-			listFiles: (path: string): string[] =>
-				zips[i]
-					.getEntries()
-					.map((entry) => entry.entryName)
-					.filter((entryName) => entryName.startsWith(path)),
-		})
+	return (
+		fileNames
+			.map(
+				(fileName, i): Pod => ({
+					name: fileName,
+					getAsset: (path: string): string | undefined => {
+						try {
+							return zips[i].readAsText(path)
+						} catch (err) {
+							return undefined
+						}
+					},
+					listFiles: (path: string): string[] =>
+						zips[i]
+							.getEntries()
+							.map((entry) => entry.entryName)
+							.filter((entryName) => entryName.startsWith(path)),
+				})
+			)
+			// Only allow project haystack PODs for now.
+			// SkySpark has some dynamically generated PODs a normal def normalizer can't
+			// detect because they're dynamic.
+			.filter((pod) => pod.name.startsWith('ph'))
 	)
 }
 

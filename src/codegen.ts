@@ -47,14 +47,22 @@ export async function codegen(): Promise<void> {
 
 	let namespace: HNamespace | undefined
 
-	if (process.env.FAN_HOME) {
-		const fanHome = String(process.env.FAN_HOME)
+	if (process.env.FIN_HOME) {
+		const home = String(process.env.FIN_HOME)
 		log(
-			colors.green('  Found FAN_HOME environment variable: ') +
-				colors.yellow(fanHome)
+			colors.green('  Found FIN_HOME environment variable: ') +
+				colors.yellow(home)
 		)
 		log(colors.green('    Compiling defs...'))
-		namespace = await resolvePodsNamespace(`${fanHome}/lib/fan`)
+		namespace = await resolvePodsNamespace(`${home}/lib/pod`)
+	} else if (process.env.FAN_HOME) {
+		const home = String(process.env.FAN_HOME)
+		log(
+			colors.green('  Found FAN_HOME environment variable: ') +
+				colors.yellow(home)
+		)
+		log(colors.green('    Compiling defs...'))
+		namespace = await resolvePodsNamespace(`${home}/lib/fan`)
 	}
 
 	if (!namespace) {
