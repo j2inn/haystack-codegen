@@ -116,25 +116,23 @@ async function getPods(podDir: string): Promise<Pod[]> {
 	const fileNames = files.map((file) => file.substring(0, file.length - 4))
 	const zips = files.map((file) => new AdmZip(path.join(podDir, file)))
 
-	return fileNames
-		.map(
-			(fileName, i): Pod => ({
-				name: fileName,
-				getAsset: (path: string): string | undefined => {
-					try {
-						return zips[i].readAsText(path)
-					} catch (err) {
-						return undefined
-					}
-				},
-				listFiles: (path: string): string[] =>
-					zips[i]
-						.getEntries()
-						.map((entry) => entry.entryName)
-						.filter((entryName) => entryName.startsWith(path)),
-			})
-		)
-		.filter((pod) => pod.name.startsWith('ph'))
+	return fileNames.map(
+		(fileName, i): Pod => ({
+			name: fileName,
+			getAsset: (path: string): string | undefined => {
+				try {
+					return zips[i].readAsText(path)
+				} catch (err) {
+					return undefined
+				}
+			},
+			listFiles: (path: string): string[] =>
+				zips[i]
+					.getEntries()
+					.map((entry) => entry.entryName)
+					.filter((entryName) => entryName.startsWith(path)),
+		})
+	)
 }
 
 /**
@@ -174,7 +172,13 @@ function readDictsFromPodLibFolder(pod: Pod): (HDefDict | HDefxDict)[] {
 
 	return trios
 		.filter((trio) => !!trio)
-		.map((trio) => new TrioReader(String(trio)).readAllDicts())
+		.map((trio) => {
+			try {
+				return new TrioReader(String(trio)).readAllDicts()
+			} catch (err) {
+				return []
+			}
+		})
 		.reduce((dicts, prev): HDict[] => dicts.concat(prev), []) as (
 		| HDefDict
 		| HDefxDict
