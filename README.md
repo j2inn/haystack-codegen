@@ -10,4 +10,4 @@
 
 # Haystack Core Code Generation Tools
 
-Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-ts) using [haystack 4 defs](https://project-haystack.dev/doc/docHaystack/Defs).
+Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-codegen) using [haystack 4 defs](https://project-haystack.dev/doc/docHaystack/Defs).

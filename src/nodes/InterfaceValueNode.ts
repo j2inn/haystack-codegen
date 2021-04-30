@@ -25,7 +25,7 @@ export class InterfaceValueNode implements Node {
 	}
 
 	public generate(out: (code: string) => void): void {
-		out(`	${this.name}${this.optional ? '?' : ''}: ${this.hvalCtorName}`)
+		out(`	${this.name}${this.optional ? '?' : ''}: ${this.type}`)
 	}
 
 	/**
@@ -34,7 +34,7 @@ export class InterfaceValueNode implements Node {
 	 * @param kind The kind.
 	 * @returns The TypeScript haystack value's name.
 	 */
-	public get hvalCtorName(): string {
+	public get type(): string {
 		return convertKindToCtorName(this.kind)
 	}
 }

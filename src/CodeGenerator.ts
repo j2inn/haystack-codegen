@@ -7,6 +7,7 @@ import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
 import { NamespaceNode } from './nodes/NamespaceNode'
+import { TypeGuardNode } from './nodes/TypeGuardNode'
 import { generateNode, makeTypeName } from './nodes/util'
 
 /**
@@ -39,19 +40,12 @@ export class CodeGenerator {
 	private addInterfaceNode(doc: DocNode, name: string): void {
 		const tags = this.#namespace.tags(name)
 
-		// Bail if there are no tags to this type.
-		if (!tags.length) {
-			return
-		}
-
 		const intNode = new InterfaceNode(name, makeTypeName(name))
 
 		// Add everything this def extends from.
 		for (const sup of this.#namespace.superTypesOf(name)) {
-			if (!this.skip(sup)) {
-				intNode.extend.push(makeTypeName(sup.defName))
-				this.addInterfaceNode(doc, sup.defName)
-			}
+			intNode.extend.push(makeTypeName(sup.defName))
+			this.addInterfaceNode(doc, sup.defName)
 		}
 
 		// Add all tags that relate to this def.
@@ -77,6 +71,22 @@ export class CodeGenerator {
 			)
 		} else {
 			doc.addInterface(intNode)
+
+			if (
+				this.#namespace.fitsEntity(name) &&
+				name !== 'entity' &&
+				!HNamespace.isConjunct(name)
+			) {
+				doc.addTypeGuard(
+					new TypeGuardNode(
+						name,
+						makeTypeName(name),
+						this.#namespace
+							.allSubTypesOf(name)
+							.map((def) => def.defName)
+					)
+				)
+			}
 		}
 	}
 
@@ -84,9 +94,5 @@ export class CodeGenerator {
 		const set = new Set<string>()
 		names.forEach(set.add, set)
 		return [...names]
-	}
-
-	private skip(def: HDict): boolean {
-		return this.#namespace.tags(def.defName).length === 0
 	}
 }

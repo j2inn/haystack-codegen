@@ -8,6 +8,7 @@ import { InterfaceNode } from './InterfaceNode'
 import { generateFromNodes } from './util'
 import { DocCommentNode } from './DocCommentNode'
 import { NamespaceNode } from './NamespaceNode'
+import { TypeGuardNode } from './TypeGuardNode'
 
 /**
  * Generates a TypeScript document.
@@ -21,7 +22,10 @@ export class DocNode implements Node {
 
 	readonly import = new HaystackCoreImportNode()
 
-	readonly #nodes: Map<string, InterfaceNode | NamespaceNode> = new Map()
+	readonly #nodes: Map<
+		string,
+		InterfaceNode | NamespaceNode | TypeGuardNode
+	> = new Map()
 
 	public addInterface(intNode: InterfaceNode): void {
 		this.#nodes.set(intNode.name, intNode)
@@ -29,6 +33,10 @@ export class DocNode implements Node {
 
 	public addNamespace(nsNode: NamespaceNode): void {
 		this.#nodes.set(`${nsNode.name}:${nsNode.intNode.name}`, nsNode)
+	}
+
+	public addTypeGuard(tgNode: TypeGuardNode): void {
+		this.#nodes.set(`tg-${tgNode.name}`, tgNode)
 	}
 
 	public generate(out: (code: string) => void): void {
@@ -49,8 +57,8 @@ export class DocNode implements Node {
 		}
 
 		for (const node of nodes.values()) {
-			for (const valueNode of node.values) {
-				imp.types.add(valueNode.hvalCtorName)
+			for (const type of node.types) {
+				imp.types.add(type)
 			}
 		}
 	}

@@ -84,7 +84,7 @@ export function makeTypeName(name: string): string {
 	return interfaceName
 }
 
-function makeFirstCharUpperCase(str: string): string {
+export function makeFirstCharUpperCase(str: string): string {
 	return `${str[0].toUpperCase()}${str.substring(1, str.length)}`
 }
 

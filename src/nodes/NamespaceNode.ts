@@ -34,4 +34,8 @@ export class NamespaceNode implements Node {
 	public get values(): InterfaceValueNode[] {
 		return this.intNode.values
 	}
+
+	public get types(): string[] {
+		return this.intNode.types
+	}
 }

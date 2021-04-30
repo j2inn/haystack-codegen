@@ -50,4 +50,8 @@ export class InterfaceNode implements Node {
 		generateFromNodes(out, this.values)
 		out('}')
 	}
+
+	public get types(): string[] {
+		return this.values.map((valNode) => valNode.type)
+	}
 }
