@@ -5,7 +5,7 @@
 import { CodeGenerator } from '../src/CodeGenerator'
 import { HNamespace } from 'haystack-core'
 import { DocCommentNode } from '../src/nodes/DocCommentNode'
-import { resolveDefaultNamespace } from '../src/nodes/util'
+import { resolveDefaultNamespace } from '../src/namespace'
 
 describe('CodeGenerator', function (): void {
 	let namespace: HNamespace

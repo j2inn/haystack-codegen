@@ -4,11 +4,12 @@
 
 import colors from 'colors/safe'
 import { CodeGenerator } from './CodeGenerator'
-import { resolveDefaultNamespace } from './nodes/util'
+import { resolveDefaultNamespace, resolvePodsNamespace } from './namespace'
 import { Command } from 'commander'
 import path from 'path'
 import { promisify } from 'util'
-import { writeFile, stat, mkdir } from 'fs'
+import { writeFile, mkdir } from 'fs'
+import { HNamespace } from 'haystack-core'
 
 const writeFileAsync = promisify(writeFile)
 const mkdirAsync = promisify(mkdir)
@@ -44,8 +45,22 @@ export async function codegen(): Promise<void> {
 			colors.yellow(defs.join(', '))
 	)
 
-	log(colors.green('  Reading default namespace'))
-	const namespace = await resolveDefaultNamespace()
+	let namespace: HNamespace | undefined
+
+	if (process.env.FAN_HOME) {
+		const fanHome = String(process.env.FAN_HOME)
+		log(
+			colors.green('  Found FAN_HOME environment variable: ') +
+				colors.yellow(fanHome)
+		)
+		log(colors.green('    Compiling defs...'))
+		namespace = await resolvePodsNamespace(`${fanHome}/lib/fan`)
+	}
+
+	if (!namespace) {
+		log(colors.green('  Reading default namespace'))
+		namespace = await resolveDefaultNamespace()
+	}
 
 	log(colors.green('  Generating TypeScript...'))
 	const ts = new CodeGenerator(defs, namespace).generate()

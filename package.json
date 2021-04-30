@@ -70,6 +70,8 @@
 		"haystack-core": "^2.0.12"
 	},
 	"dependencies": {
+		"@types/adm-zip": "^0.4.34",
+		"adm-zip": "^0.5.5",
 		"colors": "^1.4.0",
 		"commander": "^7.2.0"
 	}
