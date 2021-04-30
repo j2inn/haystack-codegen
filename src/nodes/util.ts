@@ -166,3 +166,19 @@ export async function resolveDefaultNamespace(): Promise<HNamespace> {
 	const grid = ZincReader.readValue(defsBuf.toString('utf-8')) as HGrid
 	return new HNamespace(grid)
 }
+
+/**
+ * Write the document comments.
+ *
+ * @param out Used to output the code.
+ * @param doc The documentation to write.
+ */
+export function writeDocComment(
+	out: (code: string) => void,
+	doc: string
+): void {
+	if (doc.trim()) {
+		out(' *')
+		doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
+	}
+}

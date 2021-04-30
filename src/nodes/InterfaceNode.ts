@@ -4,7 +4,7 @@
 
 import { InterfaceValueNode } from './InterfaceValueNode'
 import { Node } from './Node'
-import { generateFromNodes } from './util'
+import { generateFromNodes, writeDocComment } from './util'
 
 /**
  * Generates a TypeScript interface.
@@ -45,13 +45,7 @@ export class InterfaceNode implements Node {
 	public generate(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.def}`)
-
-		if (this.doc.trim()) {
-			out(' *')
-			this.doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
-			out(' *')
-		}
-
+		writeDocComment(out, this.doc)
 		out(' */')
 
 		let code = `export interface ${this.name} extends ${

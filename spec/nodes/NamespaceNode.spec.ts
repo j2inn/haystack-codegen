@@ -13,11 +13,22 @@ describe('NamespaceNode', function (): void {
 				generateNode(
 					new NamespaceNode(
 						'Test',
-						new InterfaceNode({ def: 'node', name: 'Node' })
+						new InterfaceNode({ def: 'node', name: 'Node' }),
+						''
 					)
-				)
+				).trim()
 			).toBe(
-				'export namespace Test {\n  /**\n   * node\n   */\n  export interface Node extends HDict {}\n}\n'
+				`
+/**
+ * Test
+ */
+export namespace Test {
+	/**
+	 * node
+	 */
+	export interface Node extends HDict {}
+}
+`.trim()
 			)
 		})
 	}) // #generate()

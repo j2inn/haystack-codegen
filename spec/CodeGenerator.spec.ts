@@ -42,11 +42,17 @@ import {
 
 /**
  * marker
+ *
+ * Marker labels a dict with typing information.
+ * See [Kinds chapter]\`docHaystack::Kinds#marker\`.
  */
 export interface Marker extends HDict {}
 
 /**
  * entity
+ *
+ * Top-level dicts with a unique identifier.
+ * See \`docHaystack::Ontology#entities\` chapter.
  */
 export interface Entity extends Marker {
 	dis?: HStr
@@ -55,6 +61,9 @@ export interface Entity extends Marker {
 
 /**
  * equip
+ *
+ * Equipment asset.
+ * See \`docHaystack::Equips\` chapter.
  */
 export interface Equip extends Entity {
 	equipRef?: HRef
@@ -149,21 +158,29 @@ export function isEquip(value: unknown, namespace?: HNamespace): value is Equip 
 
 /**
  * output
+ *
+ * Entity outputs a substance with flows to other entities
  */
 export interface Output extends Marker {}
 
 /**
  * air-output
+ *
+ * Entity outputs air to other entities
  */
 export interface Air_Output extends Output {}
 
 /**
  * input
+ *
+ * Entity inputs a substance which flows from another entity
  */
 export interface Input extends Marker {}
 
 /**
  * elec-input
+ *
+ * Entity inputs electricity which flows from another entity
  */
 export interface Elec_Input extends Input {
 	elecRef?: HRef
@@ -171,6 +188,10 @@ export interface Elec_Input extends Input {
 
 /**
  * airHandlingEquip
+ *
+ * HVAC equipment that conditions and delivers air via one or more fans.
+ * Conditioning of air includes heating, cooling, humidification,
+ * dehumidification, and ventilation. See \`docHaystack::AHUs\` chapter.
  */
 export interface AirHandlingEquip extends Equip, Air_Output, Elec_Input {}
 
@@ -206,6 +227,11 @@ export function isAirHandlingEquip(value: unknown, namespace?: HNamespace): valu
 
 /**
  * ahu
+ *
+ * Air Handling Unit: An enclosure with a fan that delivers air to a space
+ * via ductwork and performs one or more of the functions of cleaning,
+ * heating, cooling, humidifying, dehumidifying, ventilating or circulating
+ * the air.  See \`docHaystack::AHUs\` chapter.
  */
 export interface Ahu extends AirHandlingEquip {}
 

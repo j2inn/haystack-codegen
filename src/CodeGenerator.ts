@@ -72,8 +72,15 @@ export class CodeGenerator {
 		}
 
 		if (HNamespace.isFeature(name)) {
+			const feature = name.split(':')[0]
+			const featureDef = this.#namespace.byName(feature)
+
 			doc.addNamespace(
-				new NamespaceNode(name.split(':')[0] ?? '', intNode)
+				new NamespaceNode(
+					feature ?? '',
+					intNode,
+					featureDef?.get<HStr>('doc')?.value ?? ''
+				)
 			)
 		} else {
 			doc.addInterface(intNode)
