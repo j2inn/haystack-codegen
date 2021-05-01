@@ -11,3 +11,20 @@
 # Haystack Core Code Generation Tools
 
 Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-codegen) using [haystack 4 defs](https://project-haystack.dev/doc/docHaystack/Defs).
+
+* Generates TypeScript HDict [interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
+* Generates TypeScript [type guard functions](https://www.typescriptlang.org/docs/handbook/advanced-types.html)
+
+## Installation
+
+```
+npm install haystack-codegen
+```
+
+Or to install globally...
+
+```
+npm install haystack-codegen --global
+```
+
+Once installed, run the `defcodegen` command. Run `defcodegen --help` for all the different options.
