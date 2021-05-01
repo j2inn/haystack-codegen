@@ -23,6 +23,7 @@ import {
 	HXStr,
 	HNamespace,
 	ZincReader,
+	HUri,
 } from 'haystack-core'
 import { readFile } from 'fs'
 import path from 'path'
@@ -135,6 +136,8 @@ export function convertKindToCtorName(kind: Kind): string {
 			return HTime.name
 		case Kind.XStr:
 			return HXStr.name
+		case Kind.Uri:
+			return HUri.name
 		default:
 			throw new Error(`Unsupported kind: ${kind}`)
 	}

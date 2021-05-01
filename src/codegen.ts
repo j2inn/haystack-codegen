@@ -10,6 +10,8 @@ import path from 'path'
 import { promisify } from 'util'
 import { writeFile, mkdir } from 'fs'
 import { HNamespace } from 'haystack-core'
+import { Client } from 'haystack-nclient'
+import fetch from 'node-fetch'
 
 const writeFileAsync = promisify(writeFile)
 const mkdirAsync = promisify(mkdir)
@@ -21,8 +23,20 @@ function log(message: string): void {
 export async function codegen(): Promise<void> {
 	const program = new Command()
 
-	const { defs, file } = program
-		.description('Generate TypeScript code from haystack v4 defs')
+	const { defs, file, uri } = program
+		.description(
+			colors.green(
+				`
+Generate TypeScript code from haystack v4 defs
+
+Defs are fetched in the following order...
+
+- If a uri is specified, a network request will be made to fetch the defs.
+- If FIN_HOME or FAN_HOME is specified, the defs will be compiled from POD files.
+- As a last resort, the defs used in this library will be used.
+`.trim()
+			)
+		)
 		.option(
 			'-d, --defs <defs...>',
 			'a space separated list of defs to generate code from'
@@ -31,6 +45,10 @@ export async function codegen(): Promise<void> {
 			'-f, --file <file>',
 			'the TypeScript file to generate',
 			'./src/haystack/types.ts'
+		)
+		.option(
+			'-u, --uri <uri>',
+			'haystack server uri (i.e. http://localhost:8080/api/projectNameGoesHere)'
 		)
 		.parse(process.argv)
 		.opts()
@@ -47,7 +65,27 @@ export async function codegen(): Promise<void> {
 
 	let namespace: HNamespace | undefined
 
-	if (process.env.FIN_HOME) {
+	if (uri) {
+		log(colors.green('  Found uri: ') + colors.yellow(uri))
+		log(colors.green('  Requesting defs from server...'))
+
+		try {
+			const client = new Client({
+				base: new URL(uri),
+				fetch: fetch as any,
+			})
+			await client.ext.loadDefs()
+			namespace = client.defs
+			log(colors.green('  Successfully requested defs'))
+		} catch (err) {
+			log(
+				colors.red(
+					'  Cannot load defs from uri. Ensure the server is active and does not have authentication enabled'
+				)
+			)
+			throw err
+		}
+	} else if (process.env.FIN_HOME) {
 		const home = String(process.env.FIN_HOME)
 		log(
 			colors.green('  Found FIN_HOME environment variable: ') +

@@ -71,8 +71,11 @@
 	},
 	"dependencies": {
 		"@types/adm-zip": "^0.4.34",
+		"@types/node-fetch": "^2.5.10",
 		"adm-zip": "^0.5.5",
 		"colors": "^1.4.0",
-		"commander": "^7.2.0"
+		"commander": "^7.2.0",
+		"haystack-nclient": "^2.0.11",
+		"node-fetch": "^2.6.1"
 	}
 }
