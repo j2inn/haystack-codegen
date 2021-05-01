@@ -36,13 +36,43 @@ export async function resolveDefaultNamespace(): Promise<HNamespace> {
 }
 
 /**
+ * Represents a POD file.
+ */
+interface Pod {
+	/**
+	 * The name of the POD.
+	 */
+	name: string
+
+	/**
+	 * Load an asset as a string.
+	 *
+	 * @param path The path to the asset in the file.
+	 * @returns The asset as a string or undefined if it doesn't exist.
+	 */
+	getAsset(path: string): string | undefined
+
+	/**
+	 * List the paths in the POD file.
+	 *
+	 * @param dir The path within the POD file.
+	 * @returns An array of paths within the POD file.
+	 */
+	listFiles(dir: string): string[]
+}
+
+/**
  * Resolve the namespace from some POD files.
  *
  * @param podDir The directory to read the pod files from.
+ * @param podFilter If non-empty, used to filter certain POD files.
  * @returns The generated namespace.
  */
-export async function resolvePodsNamespace(podDir: string) {
-	const podsToLibDefs = await getPodToLibDefs(podDir)
+export async function resolvePodsNamespace(
+	podDir: string,
+	podFilter: string = ''
+) {
+	const podsToLibDefs = await getPodToLibDefs(podDir, podFilter)
 	const pods = [...podsToLibDefs.keys()]
 
 	const logger = {
@@ -77,38 +107,41 @@ export async function resolvePodsNamespace(podDir: string) {
 }
 
 /**
- * Represents a POD file.
+ * Asynchronously load POD to lib defs.
+ *
+ * This will filter out any POD files that don't have any defs.
+ *
+ * @param podDir The POD file directory.
+ * @param podFilter If not empty, used to filter the POD files used.
+ * @returns A map of pods to lib defs dicts.
  */
-interface Pod {
-	/**
-	 * The name of the POD.
-	 */
-	name: string
+async function getPodToLibDefs(
+	podDir: string,
+	podFilter: string
+): Promise<Map<Pod, HLibDict>> {
+	const pods = await getPods(podDir, podFilter)
 
-	/**
-	 * Load an asset as a string.
-	 *
-	 * @param path The path to the asset in the file.
-	 * @returns The asset as a string or undefined if it doesn't exist.
-	 */
-	getAsset(path: string): string | undefined
+	const map = new Map<Pod, HLibDict>()
 
-	/**
-	 * List the paths in the POD file.
-	 *
-	 * @param dir The path within the POD file.
-	 * @returns An array of paths within the POD file.
-	 */
-	listFiles(dir: string): string[]
+	for (const pod of pods) {
+		const libTrio = pod.getAsset('lib/lib.trio')
+
+		if (libTrio) {
+			map.set(pod, new TrioReader(libTrio).readDict() as HLibDict)
+		}
+	}
+
+	return map
 }
 
 /**
  * Return an array of PODs.
  *
  * @param podDir The POD file directory.
+ * @param podFilter If non-empty, used to filter the POD files used.
  * @returns An array of PODs.
  */
-async function getPods(podDir: string): Promise<Pod[]> {
+async function getPods(podDir: string, podFilter: string): Promise<Pod[]> {
 	let files = await readdirAsync(podDir)
 
 	files = files.filter((file) => file.toLowerCase().endsWith('.pod'))
@@ -135,34 +168,12 @@ async function getPods(podDir: string): Promise<Pod[]> {
 							.filter((entryName) => entryName.startsWith(path)),
 				})
 			)
-			// Only allow project haystack PODs for now.
-			// SkySpark has some dynamically generated PODs a normal def normalizer can't
-			// detect because they're dynamic.
-			.filter((pod) => pod.name.startsWith('ph'))
+			// If specified, filter the POD files scanned. We have to do this for
+			// SkySpark since some of the def library creation is dynamic.
+			.filter((pod) =>
+				podFilter ? pod.name.startsWith(podFilter) : true
+			)
 	)
-}
-
-/**
- * Asynchronously load POD to lib defs.
- *
- * This will filter out any POD files that don't have any defs.
- *
- * @returns A map of pods to lib defs dicts.
- */
-async function getPodToLibDefs(podDir: string): Promise<Map<Pod, HLibDict>> {
-	const pods = await getPods(podDir)
-
-	const map = new Map<Pod, HLibDict>()
-
-	for (const pod of pods) {
-		const libTrio = pod.getAsset('lib/lib.trio')
-
-		if (libTrio) {
-			map.set(pod, new TrioReader(libTrio).readDict() as HLibDict)
-		}
-	}
-
-	return map
 }
 
 /**

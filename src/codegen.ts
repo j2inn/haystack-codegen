@@ -100,7 +100,7 @@ Defs are fetched in the following order...
 				colors.yellow(home)
 		)
 		log(colors.green('    Compiling defs...'))
-		namespace = await resolvePodsNamespace(`${home}/lib/fan`)
+		namespace = await resolvePodsNamespace(`${home}/lib/fan`, 'ph')
 	}
 
 	if (!namespace) {
