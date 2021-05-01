@@ -2,13 +2,18 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { HNamespace, HStr } from 'haystack-core'
+import { HNamespace, HStr, HDict } from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
 import { NamespaceNode } from './nodes/NamespaceNode'
 import { TypeGuardNode } from './nodes/TypeGuardNode'
 import { generateNode, makeTypeName } from './nodes/util'
+
+/**
+ * The dict prototype used to look up whether a property already exists.
+ */
+const DICT_PROTOTYPE = (HDict.prototype as unknown) as Record<string, unknown>
 
 /**
  * Generate code for a TypeScript document.
@@ -57,7 +62,10 @@ export class CodeGenerator {
 		// Add all tags that relate to this def.
 		for (const tag of tags) {
 			for (const tagOn of this.#namespace.tagOn(tag.defName)) {
-				if (tagOn.defName === name) {
+				if (
+					tagOn.defName === name &&
+					!this.propertyAlreadyExistOnHDict(name)
+				) {
 					const kind = this.#namespace.defToKind(tag.defName)
 
 					const optional = !tag.has('mandatory')
@@ -101,6 +109,16 @@ export class CodeGenerator {
 				)
 			}
 		}
+	}
+
+	/**
+	 * Return true if the property already exists on HDict.
+	 *
+	 * @param prop The property name.
+	 * @returns True if it exists.
+	 */
+	private propertyAlreadyExistOnHDict(prop: string): boolean {
+		return DICT_PROTOTYPE[prop] !== undefined
 	}
 
 	private removeDuplicates(names: string[]): string[] {
