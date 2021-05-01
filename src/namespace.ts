@@ -70,8 +70,8 @@ interface Pod {
  */
 export async function resolvePodsNamespace(
 	podDir: string,
-	podFilter: string = ''
-) {
+	podFilter = ''
+): Promise<HNamespace> {
 	const podsToLibDefs = await getPodToLibDefs(podDir, podFilter)
 	const pods = [...podsToLibDefs.keys()]
 

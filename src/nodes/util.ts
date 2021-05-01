@@ -22,14 +22,8 @@ import {
 	HTime,
 	HXStr,
 	HNamespace,
-	ZincReader,
 	HUri,
 } from 'haystack-core'
-import { readFile } from 'fs'
-import path from 'path'
-import { promisify } from 'util'
-
-const readFileAsync = promisify(readFile)
 
 const RESERVED_NAMES = ['Date']
 

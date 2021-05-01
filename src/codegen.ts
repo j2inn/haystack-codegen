@@ -10,7 +10,7 @@ import path from 'path'
 import { promisify } from 'util'
 import { writeFile, mkdir } from 'fs'
 import { HNamespace } from 'haystack-core'
-import { Client } from 'haystack-nclient'
+import { Client, FetchMethod } from 'haystack-nclient'
 import fetch from 'node-fetch'
 
 const writeFileAsync = promisify(writeFile)
@@ -72,7 +72,7 @@ Defs are fetched in the following order...
 		try {
 			const client = new Client({
 				base: new URL(uri),
-				fetch: fetch as any,
+				fetch: (fetch as unknown) as FetchMethod,
 			})
 			await client.ext.loadDefs()
 			namespace = client.defs
