@@ -9,7 +9,7 @@ import { Command } from 'commander'
 import path from 'path'
 import { promisify } from 'util'
 import { writeFile, mkdir } from 'fs'
-import { HNamespace } from 'haystack-core'
+import { HNamespace, HSymbol } from 'haystack-core'
 import { Client, FetchMethod } from 'haystack-nclient'
 import fetch from 'node-fetch'
 
@@ -108,8 +108,16 @@ Defs are fetched in the following order...
 		namespace = await resolveDefaultNamespace()
 	}
 
+	// Special name to encode all the defs.
+	const encodeAll = defs[0] === '*all*'
+
 	log(colors.green('  Generating TypeScript...'))
-	const ts = new CodeGenerator(defs, namespace).generate()
+	const ts = new CodeGenerator(
+		encodeAll
+			? namespace.grid.listBy<HSymbol>('def').map((sym) => sym.value)
+			: defs,
+		namespace
+	).generate()
 
 	log(colors.green('  Writing file ') + colors.yellow(file))
 	const tsFile = path.resolve(file)

@@ -25,7 +25,28 @@ import {
 	HUri,
 } from 'haystack-core'
 
-const RESERVED_NAMES = ['Date']
+const RESERVED_NAMES = [
+	'Date',
+	'Kind',
+	'HBool',
+	'HCoord',
+	'HDate',
+	'HDateTime',
+	'HDict',
+	'HGrid',
+	'HList',
+	'HMarker',
+	'HNa',
+	'HNum',
+	'HRef',
+	'HRemove',
+	'HStr',
+	'HSymbol',
+	'HTime',
+	'HXStr',
+	'HNamespace',
+	'HUri',
+]
 
 /**
  * Generate the code string from a group of nodes.
