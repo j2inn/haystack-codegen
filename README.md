@@ -10,6 +10,8 @@
 
 # Haystack Core Code Generation Tools
 
+**This project is classed as experimental!**
+
 Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-codegen) using [haystack 4 defs](https://project-haystack.dev/doc/docHaystack/Defs).
 
 * Generates TypeScript HDict [interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
