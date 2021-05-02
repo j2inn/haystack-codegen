@@ -23,7 +23,7 @@ function log(message: string): void {
 export async function codegen(): Promise<void> {
 	const program = new Command()
 
-	const { defs, file, uri } = program
+	const { tags, file, uri } = program
 		.description(
 			colors.green(
 				`
@@ -38,8 +38,8 @@ Defs are fetched in the following order...
 			)
 		)
 		.option(
-			'-d, --defs <defs...>',
-			'a space separated list of defs to generate code from'
+			'-t, --tags <tags...>',
+			'a space separated list of tags to generate code from'
 		)
 		.option(
 			'-f, --file <file>',
@@ -53,14 +53,14 @@ Defs are fetched in the following order...
 		.parse(process.argv)
 		.opts()
 
-	if (process.argv.length < 3 || !defs || !defs.length) {
+	if (process.argv.length < 3 || !tags?.length) {
 		program.help()
 		return
 	}
 
 	log(
 		colors.green('Creating TypeScript for ') +
-			colors.yellow(defs.join(', '))
+			colors.yellow(tags.join(', '))
 	)
 
 	let namespace: HNamespace | undefined
@@ -109,13 +109,13 @@ Defs are fetched in the following order...
 	}
 
 	// Special name to encode all the defs.
-	const encodeAll = defs[0] === '*all*'
+	const encodeAll = tags[0] === '*all*'
 
 	log(colors.green('  Generating TypeScript...'))
 	const ts = new CodeGenerator(
 		encodeAll
 			? namespace.grid.listBy<HSymbol>('def').map((sym) => sym.value)
-			: defs,
+			: tags,
 		namespace
 	).generate()
 
