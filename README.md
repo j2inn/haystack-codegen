@@ -17,6 +17,14 @@ Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-
 * Generates TypeScript HDict [interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 * Generates TypeScript [type guard functions](https://www.typescriptlang.org/docs/handbook/2/types-from-types.html)
 
+## APIs
+
+Please click [here](http://j2-docs.s3-website-us-east-1.amazonaws.com/j2inn/haystack-codegen/index.html) for the API documentation.
+
+## Def docs
+
+Please click [here](http://j2-docs.s3-website-us-east-1.amazonaws.com/j2inn/haystack-codegen/modules/haystack_types.html) for the generated typedoc information for all defs.
+
 ## Installation
 
 ```

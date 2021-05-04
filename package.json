@@ -12,7 +12,7 @@
 	"author": "Gareth Johnson",
 	"homepage": "https://github.com/j2inn/haystack-codegen",
 	"email": "support@j2inn.com",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"module": "dist/index.es.js",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -30,7 +30,8 @@
 		"build": "npm run build:clean && tsc --project ./tsconfig.build.json",
 		"build:clean": "rimraf ./dist",
 		"prepack": "npm run lint && npm test && npm run build",
-		"codegen": "npm run build && node ./dist/index"
+		"codegen": "npm run build && node ./dist/index",
+		"doc": "typedoc ./src"
 	},
 	"files": [
 		"dist/**/*",
