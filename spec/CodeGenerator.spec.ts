@@ -2,7 +2,7 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { CodeGenerator } from '../src/CodeGenerator'
+import { CodeGenerator, TypeGuardOptions } from '../src/CodeGenerator'
 import { HDict, HList, HNamespace, HSymbol } from 'haystack-core'
 import { DocCommentNode } from '../src/nodes/DocCommentNode'
 import { resolveDefaultNamespace } from '../src/namespace'
@@ -23,7 +23,11 @@ describe('CodeGenerator', function (): void {
 		})
 
 		it('generates a document for a site', function (): void {
-			const code = new CodeGenerator(['ahu'], namespace).generate()
+			const code = new CodeGenerator({
+				names: ['ahu'],
+				namespace,
+				typeGuardOptions: TypeGuardOptions.entity,
+			}).generate()
 
 			expect(code.trim()).toBe(
 				`
@@ -271,7 +275,11 @@ export function isAhu(value: unknown, namespace?: HNamespace): value is Ahu {
 			)
 
 			expect(
-				new CodeGenerator(['valueIsKind:foo'], namespace).generate()
+				new CodeGenerator({
+					names: ['valueIsKind:foo'],
+					namespace,
+					typeGuardOptions: TypeGuardOptions.entity,
+				}).generate()
 			).toContain('export namespace valueIsKind_ {')
 		})
 
@@ -285,8 +293,22 @@ export function isAhu(value: unknown, namespace?: HNamespace): value is Ahu {
 			)
 
 			expect(
-				new CodeGenerator(['site'], namespace).generate()
+				new CodeGenerator({
+					names: ['site'],
+					namespace,
+					typeGuardOptions: TypeGuardOptions.entity,
+				}).generate()
 			).not.toContain('getKind')
+		})
+
+		it('generates an isGeoPlace typeguard when all typeguards are generated', function (): void {
+			expect(
+				new CodeGenerator({
+					names: ['discharge'],
+					namespace,
+					typeGuardOptions: TypeGuardOptions.all,
+				}).generate()
+			).toContain('isDischarge')
 		})
 	}) // #generate()
 })

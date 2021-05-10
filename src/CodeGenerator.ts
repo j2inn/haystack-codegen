@@ -2,7 +2,7 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { HNamespace, HStr, HDict } from 'haystack-core'
+import { HNamespace, HStr, HDict, HSymbol } from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
@@ -14,6 +14,14 @@ import { generateCodeFromNode, makeTypeName } from './nodes/util'
  * Reserved words for features.
  */
 const RESERVED_FEATURE_NAMES = ['valueIsKind']
+
+/**
+ * Typeguard options.
+ */
+export enum TypeGuardOptions {
+	entity = 'entity',
+	all = 'all',
+}
 
 /**
  * Generate code for a TypeScript document.
@@ -30,14 +38,28 @@ export class CodeGenerator {
 	readonly #namespace: HNamespace
 
 	/**
+	 * Typeguard options.
+	 */
+	readonly #typeGuardOptions: TypeGuardOptions
+
+	/**
 	 * Construct a new code generator.
 	 *
 	 * @param names The names of the defs to generate the code for.
 	 * @param namespace The defs namespace.
 	 */
-	public constructor(names: string[], namespace: HNamespace) {
+	public constructor({
+		names,
+		namespace,
+		typeGuardOptions,
+	}: {
+		names: string[]
+		namespace: HNamespace
+		typeGuardOptions: TypeGuardOptions
+	}) {
 		this.#names = names
 		this.#namespace = namespace
+		this.#typeGuardOptions = typeGuardOptions
 	}
 
 	/**
@@ -84,13 +106,28 @@ export class CodeGenerator {
 			doc.addInterface(intNode)
 
 			if (
-				this.#namespace.fitsEntity(name) &&
-				name !== 'entity' &&
-				!HNamespace.isConjunct(name)
+				!HNamespace.isConjunct(name) &&
+				def &&
+				!CodeGenerator.isDefFromCorePh(def)
 			) {
-				this.addTypeGuard(name, doc)
+				if (
+					this.#typeGuardOptions === TypeGuardOptions.all ||
+					this.#namespace.fitsEntity(name)
+				) {
+					this.addTypeGuard(name, doc)
+				}
 			}
 		}
+	}
+
+	/**
+	 * Return true if the def is from the core project haystack library.
+	 *
+	 * @param def The def to test.
+	 * @returns True if the def is from the core project haystack library.
+	 */
+	private static isDefFromCorePh(def: HDict): boolean {
+		return def.get<HSymbol>('lib')?.value === 'lib:ph'
 	}
 
 	/**

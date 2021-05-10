@@ -23,7 +23,7 @@ function log(message: string): void {
 export async function codegen(): Promise<void> {
 	const program = new Command()
 
-	const { tags, file, uri } = program
+	const { tags, file, uri, typeguard } = program
 		.description(
 			colors.green(
 				`
@@ -49,6 +49,11 @@ Defs are fetched in the following order...
 		.option(
 			'-u, --uri <uri>',
 			'haystack server uri (i.e. http://localhost:8080/api/projectNameGoesHere)'
+		)
+		.option(
+			'-g, --typeguard <entity|all>',
+			'typeguard generation. Only entities or everything (excluding ph lib).',
+			'entity'
 		)
 		.parse(process.argv)
 		.opts()
@@ -112,12 +117,13 @@ Defs are fetched in the following order...
 	const encodeAll = tags[0] === '*all*'
 
 	log(colors.green('  Generating TypeScript...'))
-	const ts = new CodeGenerator(
-		encodeAll
+	const ts = new CodeGenerator({
+		names: encodeAll
 			? namespace.grid.listBy<HSymbol>('def').map((sym) => sym.value)
 			: tags,
-		namespace
-	).generate()
+		namespace,
+		typeGuardOptions: typeguard,
+	}).generate()
 
 	log(colors.green('  Writing file ') + colors.yellow(file))
 	const tsFile = path.resolve(file)
