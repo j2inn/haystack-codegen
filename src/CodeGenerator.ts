@@ -2,7 +2,14 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { HNamespace, HStr, HDict, HSymbol } from 'haystack-core'
+import {
+	HNamespace,
+	HStr,
+	HDict,
+	HSymbol,
+	valueIsKind,
+	Kind,
+} from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
@@ -91,6 +98,10 @@ export class CodeGenerator {
 		const tags = this.#namespace.tags(name)
 		const def = this.#namespace.byName(name)
 
+		if (def) {
+			this.addLib(def, doc)
+		}
+
 		const intNode = new InterfaceNode({
 			def: name,
 			name: makeTypeName(name),
@@ -116,6 +127,23 @@ export class CodeGenerator {
 				) {
 					this.addTypeGuard(name, doc)
 				}
+			}
+		}
+	}
+
+	/**
+	 * Add the lib for the def to the libs node.
+	 *
+	 * @param def The def.
+	 * @param doc The document node.
+	 */
+	private addLib(def: HDict, doc: DocNode): void {
+		const lib = def?.get('lib')
+		if (valueIsKind<HSymbol>(lib, Kind.Symbol)) {
+			const libDef = this.#namespace.get(lib)
+
+			if (libDef) {
+				doc.libs.addLib(libDef)
 			}
 		}
 	}

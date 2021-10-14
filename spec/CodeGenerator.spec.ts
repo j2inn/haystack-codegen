@@ -45,6 +45,20 @@ import {
 } from 'haystack-core'
 
 /**
+ * Libraries used for code generation.
+ */
+export const LIBS = [
+	{
+		name: 'lib:phIoT',
+		version: '3.9.10',
+	},
+	{
+		name: 'lib:ph',
+		version: '3.9.10',
+	},
+]
+
+/**
  * marker
  *
  * Marker labels a dict with typing information.

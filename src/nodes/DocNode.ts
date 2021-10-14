@@ -9,6 +9,7 @@ import { generateNodes } from './util'
 import { DocCommentNode } from './DocCommentNode'
 import { NamespaceNode } from './NamespaceNode'
 import { TypeGuardNode } from './TypeGuardNode'
+import { LibsNode } from './LibsNode'
 
 /**
  * Generates a TypeScript document.
@@ -21,6 +22,8 @@ export class DocNode implements Node {
 	public readonly comment = new DocCommentNode()
 
 	public readonly import = new HaystackCoreImportNode()
+
+	public readonly libs = new LibsNode()
 
 	readonly #nodes: Map<
 		string,
@@ -41,7 +44,12 @@ export class DocNode implements Node {
 
 	public generateCode(out: (code: string) => void): void {
 		this.addAllValuesToImport()
-		generateNodes(out, [this.comment, this.import, ...this.#nodes.values()])
+		generateNodes(out, [
+			this.comment,
+			this.import,
+			this.libs,
+			...this.#nodes.values(),
+		])
 	}
 
 	private addAllValuesToImport(): void {

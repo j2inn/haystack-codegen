@@ -40,6 +40,11 @@ import {
 } from 'haystack-core'
 
 /**
+ * Libraries used for code generation.
+ */
+export const LIBS = []
+
+/**
  * foo
  */
 export interface Foo extends HDict {
@@ -78,6 +83,11 @@ import {
 	HDict,
 	HStr,
 } from 'haystack-core'
+
+/**
+ * Libraries used for code generation.
+ */
+export const LIBS = []
 
 /**
  * boo
