@@ -77,7 +77,7 @@ Defs are fetched in the following order...
 		try {
 			const client = new Client({
 				base: new URL(uri),
-				fetch: (fetch as unknown) as FetchMethod,
+				fetch: fetch as unknown as FetchMethod,
 			})
 			await client.ext.loadDefs()
 			namespace = client.defs

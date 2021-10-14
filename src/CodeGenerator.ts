@@ -233,7 +233,7 @@ export class CodeGenerator {
 	 * @returns True if it exists.
 	 */
 	private propertyAlreadyExistOnHDict(prop: string): boolean {
-		return !!((HDict.prototype as unknown) as Record<string, unknown>)[prop]
+		return !!(HDict.prototype as unknown as Record<string, unknown>)[prop]
 	}
 
 	/**
