@@ -189,17 +189,22 @@ export class CodeGenerator {
 		intNode: InterfaceNode
 	): void {
 		// Add all tags that relate to this def.
+		const tagSet = new Set<HDict>()
+
 		for (const tag of tags) {
 			for (const tagOn of this.#namespace.tagOn(tag.defName)) {
 				if (
 					tagOn.defName === name &&
-					!this.propertyAlreadyExistOnHDict(tag.defName)
+					!this.propertyAlreadyExistOnHDict(tag.defName) &&
+					!tagSet.has(tag)
 				) {
 					const kind = this.#namespace.defToKind(tag.defName)
 
 					const optional = !tag.has('mandatory')
 
 					if (kind) {
+						tagSet.add(tag)
+
 						intNode.values.push(
 							new InterfaceValueNode(
 								tag.defName,
