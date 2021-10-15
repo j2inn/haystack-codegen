@@ -83,7 +83,7 @@ export class CodeGenerator {
 		const doc = new DocNode()
 		this.#nameToDefCache = {}
 
-		for (const name of this.removeDuplicates(this.#names)) {
+		for (const name of this.sortNamesAndFeatures()) {
 			if (!this.#namespace.has(name)) {
 				throw new Error(`Could not find def for ${name}`)
 			}
@@ -92,6 +92,27 @@ export class CodeGenerator {
 		}
 
 		return generateCodeFromNode(doc)
+	}
+
+	/**
+	 * Sort alphabetically by names and then features.
+	 *
+	 * @returns The def names.
+	 */
+	private sortNamesAndFeatures(): string[] {
+		// It's nice not to have underscores added to the end of the non-feature
+		// names (duplicates). Therefore process non-feature defs first.
+
+		const names = this.removeDuplicates(this.#names)
+		const features: string[] = []
+
+		for (let i = names.length; i >= 0; --i) {
+			if (HNamespace.isFeature(names[i])) {
+				features.push(names.splice(i, 1)[0])
+			}
+		}
+
+		return [...names.sort(), ...features.sort()]
 	}
 
 	/**
