@@ -52,19 +52,29 @@ describe('generateCodeFromNode()', function (): void {
 
 describe('makeTypeName()', function (): void {
 	it('throws an error for an empty string', function (): void {
-		expect(() => makeTypeName('')).toThrow()
+		expect(() => makeTypeName('', {})).toThrow()
 	})
 
 	it('returns an interface name', function (): void {
-		expect(makeTypeName('foo')).toBe('Foo')
+		expect(makeTypeName('foo', {})).toBe('Foo')
 	})
 
 	it('returns an interface name for a Date', function (): void {
-		expect(makeTypeName('date')).toBe('IDate')
+		expect(makeTypeName('date', {})).toBe('IDate')
 	})
 
 	it('returns an interface name for a conjunct', function (): void {
-		expect(makeTypeName('elec-meter')).toBe('Elec_Meter')
+		expect(makeTypeName('elec-meter', {})).toBe('Elec_Meter')
+	})
+
+	it('returns an interface name for a feature', function (): void {
+		expect(makeTypeName('lib:ph', {})).toBe('Ph')
+	})
+
+	it('returns an interface name for a feature that already has a cached name', function (): void {
+		const cache: Record<string, string> = {}
+		expect(makeTypeName('func', cache)).toBe('Func')
+		expect(makeTypeName('func:func', cache)).toBe('Func_')
 	})
 }) // makeTypeName()
 

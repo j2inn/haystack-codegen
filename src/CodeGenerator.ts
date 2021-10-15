@@ -50,6 +50,11 @@ export class CodeGenerator {
 	readonly #typeGuardOptions: TypeGuardOptions
 
 	/**
+	 * A name to def cache.
+	 */
+	#nameToDefCache: Record<string, string> = {}
+
+	/**
 	 * Construct a new code generator.
 	 *
 	 * @param names The names of the defs to generate the code for.
@@ -76,6 +81,7 @@ export class CodeGenerator {
 	 */
 	public generate(): string {
 		const doc = new DocNode()
+		this.#nameToDefCache = {}
 
 		for (const name of this.removeDuplicates(this.#names)) {
 			if (!this.#namespace.has(name)) {
@@ -104,7 +110,7 @@ export class CodeGenerator {
 
 		const intNode = new InterfaceNode({
 			def: name,
-			name: makeTypeName(name),
+			name: makeTypeName(name, this.#nameToDefCache),
 			doc: def?.get<HStr>('doc')?.value ?? '',
 		})
 
@@ -171,7 +177,7 @@ export class CodeGenerator {
 		intNode: InterfaceNode
 	): void {
 		for (const sup of this.#namespace.superTypesOf(name)) {
-			intNode.extend.push(makeTypeName(sup.defName))
+			intNode.extend.push(makeTypeName(sup.defName, this.#nameToDefCache))
 			this.addInterface(sup.defName, doc)
 		}
 	}
@@ -258,7 +264,7 @@ export class CodeGenerator {
 		doc.addTypeGuard(
 			new TypeGuardNode(
 				name,
-				makeTypeName(name),
+				makeTypeName(name, this.#nameToDefCache),
 				this.#namespace.allSubTypesOf(name).map((def) => def.defName)
 			)
 		)
