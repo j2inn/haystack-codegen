@@ -24,6 +24,7 @@ import {
 	HNamespace,
 	HUri,
 } from 'haystack-core'
+import { InterfaceValueNode } from './InterfaceValueNode'
 
 const RESERVED_NAMES = [
 	'Date',
@@ -65,8 +66,9 @@ export function generateNodes(
 		node.generateCode((code: string) => {
 			if (code) {
 				isEmpty = false
-				out(code)
 			}
+
+			out(code)
 		})
 
 		if (!isEmpty) {
@@ -191,8 +193,5 @@ export function writeDocComment(
 	out: (code: string) => void,
 	doc: string
 ): void {
-	if (doc.trim()) {
-		out(' *')
-		doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
-	}
+	doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
 }

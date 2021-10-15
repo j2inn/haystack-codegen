@@ -45,7 +45,10 @@ export class InterfaceNode implements Node {
 	public generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.def}`)
-		writeDocComment(out, this.doc)
+		if (this.doc.trim()) {
+			out(' *')
+			writeDocComment(out, this.doc)
+		}
 		out(' */')
 
 		if (this.values.length) {
@@ -70,6 +73,12 @@ export class InterfaceNode implements Node {
 
 		code += ` {`
 		out(code)
+
+		// The last value shouldn't have any new lines after it.
+		this.values.forEach(
+			(val, i) => (val.newLines = i === this.values.length - 1 ? 0 : 1)
+		)
+
 		generateNodes(out, this.values)
 		out('}')
 	}

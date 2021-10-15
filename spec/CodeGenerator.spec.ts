@@ -73,7 +73,18 @@ export type Marker = HDict
  * See \`docHaystack::Ontology#entities\` chapter.
  */
 export interface Entity extends Marker {
+	/**
+	 * Display name for an entity.
+	 * See \`docHaystack::Ontology#entities\` chapter.
+	 */
 	dis?: HStr
+
+	/**
+	 * Defines the unique identifier of an entity in system using a \`ref\` value
+	 * type. The scope of an entity is undefined, but must be unique with a
+	 * given system or project. This identifier may be used by other entities
+	 * for cross-referencing.  See \`docHaystack::Ontology#entities\` chapter.
+	 */
 	id?: HRef
 }
 
@@ -84,8 +95,19 @@ export interface Entity extends Marker {
  * See \`docHaystack::Equips\` chapter.
  */
 export interface Equip extends Entity {
+	/**
+	 * Reference to equip which contains this entity
+	 */
 	equipRef?: HRef
+
+	/**
+	 * Reference to site which contains the entity
+	 */
 	siteRef?: HRef
+
+	/**
+	 * Reference to space which contains this entity
+	 */
 	spaceRef?: HRef
 }
 
@@ -102,6 +124,7 @@ export function isEquip(value: unknown, namespace?: HNamespace): value is Equip 
 	if (!valueIsKind<HDict>(value, Kind.Dict)) {
 		return false
 	}
+
 	if (namespace) {
 		return !!namespace.reflect(value)?.fits('equip')
 	} else {
@@ -201,6 +224,9 @@ export type Input = Marker
  * Entity inputs electricity which flows from another entity
  */
 export interface Elec_Input extends Input {
+	/**
+	 * Electricity flows from the referent to this entity
+	 */
 	elecRef?: HRef
 }
 
@@ -226,6 +252,7 @@ export function isAirHandlingEquip(value: unknown, namespace?: HNamespace): valu
 	if (!valueIsKind<HDict>(value, Kind.Dict)) {
 		return false
 	}
+
 	if (namespace) {
 		return !!namespace.reflect(value)?.fits('airHandlingEquip')
 	} else {
@@ -266,6 +293,7 @@ export function isAhu(value: unknown, namespace?: HNamespace): value is Ahu {
 	if (!valueIsKind<HDict>(value, Kind.Dict)) {
 		return false
 	}
+
 	if (namespace) {
 		return !!namespace.reflect(value)?.fits('ahu')
 	} else {

@@ -29,7 +29,10 @@ export class NamespaceNode implements Node {
 	public generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.name}`)
-		writeDocComment(out, this.doc)
+		if (this.doc.trim()) {
+			out(' *')
+			writeDocComment(out, this.doc)
+		}
 		out(' */')
 		out(`export namespace ${this.name} {`)
 		generateNodes((code: string): void => out(`	${code}`), [this.intNode])

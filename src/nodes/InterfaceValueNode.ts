@@ -4,7 +4,7 @@
 
 import { Kind } from 'haystack-core'
 import { Node } from './Node'
-import { convertKindToCtorName } from './util'
+import { convertKindToCtorName, writeDocComment } from './util'
 
 /**
  * Generates a value line in a TypeScript interface.
@@ -12,19 +12,37 @@ import { convertKindToCtorName } from './util'
 export class InterfaceValueNode implements Node {
 	public readonly name: string
 
+	public readonly doc: string
+
 	public readonly kind: Kind
 
 	public readonly optional: boolean
 
-	public readonly newLines = 0
+	/**
+	 * The number of new lines after this node is set dynamically depending on its
+	 * position in the parent interface.
+	 */
+	public newLines = 1
 
-	public constructor(name: string, kind: Kind, optional = false) {
+	public constructor(
+		name: string,
+		doc: string,
+		kind: Kind,
+		optional = false
+	) {
 		this.name = name
+		this.doc = doc
 		this.kind = kind
 		this.optional = optional
 	}
 
 	public generateCode(out: (code: string) => void): void {
+		if (this.doc.trim()) {
+			out('	/**')
+			writeDocComment((code: string): void => out(`	${code}`), this.doc)
+			out('	 */')
+		}
+
 		out(`	${this.name}${this.optional ? '?' : ''}: ${this.type}`)
 	}
 

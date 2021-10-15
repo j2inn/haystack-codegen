@@ -201,7 +201,12 @@ export class CodeGenerator {
 
 					if (kind) {
 						intNode.values.push(
-							new InterfaceValueNode(tag.defName, kind, optional)
+							new InterfaceValueNode(
+								tag.defName,
+								tag.get<HStr>('doc')?.value ?? '',
+								kind,
+								optional
+							)
 						)
 					}
 				}

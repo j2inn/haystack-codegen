@@ -158,6 +158,6 @@ describe('writeDocComment()', function (): void {
 			out += code + '\n'
 		}, comment)
 
-		expect(out).toBe(' *\n * this is\n * a test\n * oh yes\n')
+		expect(out).toBe(' * this is\n * a test\n * oh yes\n')
 	})
 }) // writeDocComment()
