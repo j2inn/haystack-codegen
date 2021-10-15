@@ -24,7 +24,12 @@ describe('DocNode', function (): void {
 				new InterfaceNode({
 					def: 'foo',
 					name: 'Foo',
-					values: [new InterfaceValueNode('test', '', Kind.Str)],
+					values: [
+						new InterfaceValueNode({
+							name: 'test',
+							kind: Kind.Str,
+						}),
+					],
 				})
 			)
 
@@ -60,7 +65,12 @@ export interface Foo extends HDict {
 				new InterfaceNode({
 					def: 'boo',
 					name: 'Boo',
-					values: [new InterfaceValueNode('test', '', Kind.Str)],
+					values: [
+						new InterfaceValueNode({
+							name: 'test',
+							kind: Kind.Str,
+						}),
+					],
 				})
 			)
 
@@ -69,7 +79,12 @@ export interface Foo extends HDict {
 					def: 'foo',
 					name: 'Foo',
 					extend: ['Boo'],
-					values: [new InterfaceValueNode('test', '', Kind.Str)],
+					values: [
+						new InterfaceValueNode({
+							name: 'test',
+							kind: Kind.Str,
+						}),
+					],
 				})
 			)
 

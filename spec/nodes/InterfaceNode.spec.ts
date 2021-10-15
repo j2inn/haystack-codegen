@@ -13,7 +13,9 @@ describe('InterfaceNode', function (): void {
 			const node = new InterfaceNode({
 				def: 'test',
 				name: 'Test',
-				values: [new InterfaceValueNode('test', '', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(
@@ -26,7 +28,9 @@ describe('InterfaceNode', function (): void {
 				def: 'dog',
 				name: 'Dog',
 				extend: ['Mammal'],
-				values: [new InterfaceValueNode('test', '', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(
@@ -40,7 +44,11 @@ describe('InterfaceNode', function (): void {
 				name: 'Dog',
 				extend: ['Mammal'],
 				values: [
-					new InterfaceValueNode('test', 'doc comment', Kind.Bool),
+					new InterfaceValueNode({
+						name: 'test',
+						doc: 'doc comment',
+						kind: Kind.Bool,
+					}),
 				],
 			})
 
@@ -54,7 +62,9 @@ describe('InterfaceNode', function (): void {
 				def: 'dog',
 				name: 'Dog',
 				extend: ['Mammal', 'Pug'],
-				values: [new InterfaceValueNode('test', '', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(

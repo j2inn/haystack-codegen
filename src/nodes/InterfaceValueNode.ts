@@ -16,6 +16,8 @@ export class InterfaceValueNode implements Node {
 
 	public readonly kind: Kind
 
+	public readonly generic: string
+
 	public readonly optional: boolean
 
 	/**
@@ -24,16 +26,25 @@ export class InterfaceValueNode implements Node {
 	 */
 	public newLines = 1
 
-	public constructor(
-		name: string,
-		doc: string,
-		kind: Kind,
-		optional = false
-	) {
+	public constructor({
+		name,
+		kind,
+		doc,
+		generic,
+		optional,
+	}: {
+		name: string
+		kind: Kind
+
+		doc?: string
+		generic?: string
+		optional?: boolean
+	}) {
 		this.name = name
-		this.doc = doc
+		this.doc = doc ?? ''
 		this.kind = kind
-		this.optional = optional
+		this.generic = generic ?? ''
+		this.optional = !!optional
 	}
 
 	public generateCode(out: (code: string) => void): void {
@@ -43,7 +54,11 @@ export class InterfaceValueNode implements Node {
 			out('	 */')
 		}
 
-		out(`	${this.name}${this.optional ? '?' : ''}: ${this.type}`)
+		out(
+			`	${this.name}${this.optional ? '?' : ''}: ${this.type}${
+				this.generic ? `<${this.generic}>` : ''
+			}`
+		)
 	}
 
 	/**

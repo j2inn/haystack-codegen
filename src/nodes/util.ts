@@ -24,7 +24,6 @@ import {
 	HNamespace,
 	HUri,
 } from 'haystack-core'
-import { InterfaceValueNode } from './InterfaceValueNode'
 
 const RESERVED_NAMES = [
 	'Date',

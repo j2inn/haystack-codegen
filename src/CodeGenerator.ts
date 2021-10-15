@@ -215,7 +215,7 @@ export class CodeGenerator {
 		tags: HDict[],
 		intNode: InterfaceNode
 	): void {
-		// Add all tags that relate to this def.
+		// Ensure's no tag is added twice for a node.
 		const tagSet = new Set<HDict>()
 
 		for (const tag of tags) {
@@ -232,13 +232,26 @@ export class CodeGenerator {
 					if (kind) {
 						tagSet.add(tag)
 
-						intNode.values.push(
-							new InterfaceValueNode(
-								tag.defName,
-								tag.get<HStr>('doc')?.value ?? '',
-								kind,
-								optional
+						let generic =
+							(kind === Kind.List &&
+								tag.get<HSymbol>('of')?.value) ||
+							''
+
+						if (generic) {
+							generic = makeTypeName(
+								generic,
+								this.#nameToDefCache
 							)
+						}
+
+						intNode.values.push(
+							new InterfaceValueNode({
+								name: tag.defName,
+								kind,
+								doc: tag.get<HStr>('doc')?.value,
+								generic,
+								optional,
+							})
 						)
 					}
 				}
