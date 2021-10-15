@@ -64,7 +64,7 @@ export const LIBS = [
  * Marker labels a dict with typing information.
  * See [Kinds chapter]\`docHaystack::Kinds#marker\`.
  */
-export interface Marker extends HDict {}
+export type Marker = HDict
 
 /**
  * entity
@@ -179,21 +179,21 @@ export function isEquip(value: unknown, namespace?: HNamespace): value is Equip 
  *
  * Entity outputs a substance with flows to other entities
  */
-export interface Output extends Marker {}
+export type Output = Marker
 
 /**
  * air-output
  *
  * Entity outputs air to other entities
  */
-export interface Air_Output extends Output {}
+export type Air_Output = Output
 
 /**
  * input
  *
  * Entity inputs a substance which flows from another entity
  */
-export interface Input extends Marker {}
+export type Input = Marker
 
 /**
  * elec-input
@@ -211,7 +211,7 @@ export interface Elec_Input extends Input {
  * Conditioning of air includes heating, cooling, humidification,
  * dehumidification, and ventilation. See \`docHaystack::AHUs\` chapter.
  */
-export interface AirHandlingEquip extends Equip, Air_Output, Elec_Input {}
+export type AirHandlingEquip = Equip & Air_Output & Elec_Input
 
 /**
  * Returns true if a value is a airHandlingEquip.
@@ -251,7 +251,7 @@ export function isAirHandlingEquip(value: unknown, namespace?: HNamespace): valu
  * heating, cooling, humidifying, dehumidifying, ventilating or circulating
  * the air.  See \`docHaystack::AHUs\` chapter.
  */
-export interface Ahu extends AirHandlingEquip {}
+export type Ahu = AirHandlingEquip
 
 /**
  * Returns true if a value is a ahu.
