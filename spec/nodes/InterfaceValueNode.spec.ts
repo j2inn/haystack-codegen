@@ -11,7 +11,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a boolean value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Bool })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					})
 				)
 			).toBe('	test: HBool\n')
 		})
@@ -21,6 +25,7 @@ describe('InterfaceValueNode', function (): void {
 				generateCodeFromNode(
 					new InterfaceValueNode({
 						name: 'test',
+						type: 'HBool',
 						kind: Kind.Bool,
 						optional: true,
 					})
@@ -31,7 +36,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a coord value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Coord })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HCoord',
+						kind: Kind.Coord,
+					})
 				)
 			).toBe('	test: HCoord\n')
 		})
@@ -39,7 +48,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a date value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Date })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HDate',
+						kind: Kind.Date,
+					})
 				)
 			).toBe('	test: HDate\n')
 		})
@@ -49,6 +62,7 @@ describe('InterfaceValueNode', function (): void {
 				generateCodeFromNode(
 					new InterfaceValueNode({
 						name: 'test',
+						type: 'HDateTime',
 						kind: Kind.DateTime,
 					})
 				)
@@ -58,7 +72,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a dict value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Dict })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HDict',
+						kind: Kind.Dict,
+					})
 				)
 			).toBe('	test: HDict\n')
 		})
@@ -66,7 +84,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a grid value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Grid })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HGrid',
+						kind: Kind.Grid,
+					})
 				)
 			).toBe('	test: HGrid\n')
 		})
@@ -74,7 +96,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a list value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.List })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HList',
+						kind: Kind.List,
+					})
 				)
 			).toBe('	test: HList\n')
 		})
@@ -84,17 +110,23 @@ describe('InterfaceValueNode', function (): void {
 				generateCodeFromNode(
 					new InterfaceValueNode({
 						name: 'test',
-						generic: 'Symbol',
+						type: 'HList',
 						kind: Kind.List,
+						genericType: 'HSymbol',
+						genericKind: Kind.Symbol,
 					})
 				)
-			).toBe('	test: HList<Symbol>\n')
+			).toBe('	test: HList<HSymbol>\n')
 		})
 
 		it('generates a marker value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Marker })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HMarker',
+						kind: Kind.Marker,
+					})
 				)
 			).toBe('	test: HMarker\n')
 		})
@@ -102,7 +134,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a NA value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.NA })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HNa',
+						kind: Kind.NA,
+					})
 				)
 			).toBe('	test: HNa\n')
 		})
@@ -110,7 +146,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a number value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Number })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HNum',
+						kind: Kind.Number,
+					})
 				)
 			).toBe('	test: HNum\n')
 		})
@@ -118,7 +158,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a ref value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Ref })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HRef',
+						kind: Kind.Ref,
+					})
 				)
 			).toBe('	test: HRef\n')
 		})
@@ -126,7 +170,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a remove value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Remove })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HRemove',
+						kind: Kind.Remove,
+					})
 				)
 			).toBe('	test: HRemove\n')
 		})
@@ -134,7 +182,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a string value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Str })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HStr',
+						kind: Kind.Str,
+					})
 				)
 			).toBe('	test: HStr\n')
 		})
@@ -142,7 +194,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a symbol value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Symbol })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HSymbol',
+						kind: Kind.Symbol,
+					})
 				)
 			).toBe('	test: HSymbol\n')
 		})
@@ -150,7 +206,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a time value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.Time })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HTime',
+						kind: Kind.Time,
+					})
 				)
 			).toBe('	test: HTime\n')
 		})
@@ -158,7 +218,11 @@ describe('InterfaceValueNode', function (): void {
 		it('generates a xstr value node', function (): void {
 			expect(
 				generateCodeFromNode(
-					new InterfaceValueNode({ name: 'test', kind: Kind.XStr })
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HXStr',
+						kind: Kind.XStr,
+					})
 				)
 			).toBe('	test: HXStr\n')
 		})
@@ -168,6 +232,7 @@ describe('InterfaceValueNode', function (): void {
 				generateCodeFromNode(
 					new InterfaceValueNode({
 						name: 'test',
+						type: 'HStr',
 						doc: 'doc comment',
 						kind: Kind.Str,
 					})

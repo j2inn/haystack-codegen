@@ -59,7 +59,10 @@ export class InterfaceNode implements Node {
 	}
 
 	public get types(): string[] {
-		return this.values.map((valNode) => valNode.type)
+		return this.values.reduce(
+			(types, valNode): string[] => types.concat(valNode.types),
+			[] as string[]
+		)
 	}
 
 	private generateInterface(out: (code: string) => void): void {

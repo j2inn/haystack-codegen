@@ -14,9 +14,13 @@ export class InterfaceValueNode implements Node {
 
 	public readonly doc: string
 
+	public readonly type: string
+
 	public readonly kind: Kind
 
-	public readonly generic: string
+	public readonly genericType?: string
+
+	public readonly genericKind?: Kind
 
 	public readonly optional: boolean
 
@@ -28,22 +32,27 @@ export class InterfaceValueNode implements Node {
 
 	public constructor({
 		name,
+		type,
 		kind,
 		doc,
-		generic,
+		genericType,
+		genericKind,
 		optional,
 	}: {
 		name: string
+		type: string
 		kind: Kind
-
 		doc?: string
-		generic?: string
+		genericType?: string
+		genericKind?: Kind
 		optional?: boolean
 	}) {
 		this.name = name
-		this.doc = doc ?? ''
+		this.type = type
 		this.kind = kind
-		this.generic = generic ?? ''
+		this.doc = doc ?? ''
+		this.genericType = genericType
+		this.genericKind = genericKind
 		this.optional = !!optional
 	}
 
@@ -56,18 +65,24 @@ export class InterfaceValueNode implements Node {
 
 		out(
 			`	${this.name}${this.optional ? '?' : ''}: ${this.type}${
-				this.generic ? `<${this.generic}>` : ''
+				this.genericType ? `<${this.genericType}>` : ''
 			}`
 		)
 	}
 
 	/**
-	 * Returns the haystack value's constructor name based on the kind.
+	 * Returns the types (haystack-core constructor names) used with this node.
 	 *
 	 * @param kind The kind.
-	 * @returns The TypeScript haystack value's name.
+	 * @returns The TypeScript haystack constructor names.
 	 */
-	public get type(): string {
-		return convertKindToCtorName(this.kind)
+	public get types(): string[] {
+		const types = [convertKindToCtorName(this.kind)]
+
+		if (this.genericKind) {
+			types.push(convertKindToCtorName(this.genericKind))
+		}
+
+		return types
 	}
 }

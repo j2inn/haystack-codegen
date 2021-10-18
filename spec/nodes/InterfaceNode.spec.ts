@@ -14,7 +14,11 @@ describe('InterfaceNode', function (): void {
 				def: 'test',
 				name: 'Test',
 				values: [
-					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
 				],
 			})
 
@@ -29,7 +33,11 @@ describe('InterfaceNode', function (): void {
 				name: 'Dog',
 				extend: ['Mammal'],
 				values: [
-					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
 				],
 			})
 
@@ -47,6 +55,7 @@ describe('InterfaceNode', function (): void {
 					new InterfaceValueNode({
 						name: 'test',
 						doc: 'doc comment',
+						type: 'HBool',
 						kind: Kind.Bool,
 					}),
 				],
@@ -63,7 +72,11 @@ describe('InterfaceNode', function (): void {
 				name: 'Dog',
 				extend: ['Mammal', 'Pug'],
 				values: [
-					new InterfaceValueNode({ name: 'test', kind: Kind.Bool }),
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
 				],
 			})
 

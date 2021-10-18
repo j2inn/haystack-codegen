@@ -352,5 +352,15 @@ export function isAhu(value: unknown, namespace?: HNamespace): value is Ahu {
 				}).generate()
 			).toContain('isDischarge')
 		})
+
+		it('generates a list with a generic type', function (): void {
+			expect(
+				new CodeGenerator({
+					names: ['def'],
+					namespace,
+					typeGuardOptions: TypeGuardOptions.entity,
+				}).generate()
+			).toContain('HList<HSymbol>')
+		})
 	}) // #generate()
 })

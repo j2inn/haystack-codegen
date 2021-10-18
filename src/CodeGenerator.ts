@@ -15,7 +15,11 @@ import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
 import { NamespaceNode } from './nodes/NamespaceNode'
 import { TypeGuardNode } from './nodes/TypeGuardNode'
-import { generateCodeFromNode, makeTypeName } from './nodes/util'
+import {
+	convertKindToCtorName,
+	generateCodeFromNode,
+	makeTypeName,
+} from './nodes/util'
 
 /**
  * Reserved words for features.
@@ -232,24 +236,16 @@ export class CodeGenerator {
 					if (kind) {
 						tagSet.add(tag)
 
-						let generic =
-							(kind === Kind.List &&
-								tag.get<HSymbol>('of')?.value) ||
-							''
-
-						if (generic) {
-							generic = makeTypeName(
-								generic,
-								this.#nameToDefCache
-							)
-						}
+						const genericInfo = this.resolveGenericInfo(tag)
 
 						intNode.values.push(
 							new InterfaceValueNode({
 								name: tag.defName,
+								type: this.resolveType(tag.defName, kind),
 								kind,
 								doc: tag.get<HStr>('doc')?.value,
-								generic,
+								genericType: genericInfo?.type,
+								genericKind: genericInfo?.kind,
 								optional,
 							})
 						)
@@ -257,6 +253,60 @@ export class CodeGenerator {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Return the generic type for the given tag.
+	 *
+	 * @param tag The tag to resolve the generic parameter from.
+	 * @return The generic parameter or an empty string if one can't be resolved.
+	 */
+	private resolveGenericInfo(tag: HDict):
+		| {
+				type: string
+				kind: Kind
+		  }
+		| undefined {
+		let typeInfo:
+			| {
+					type: string
+					kind: Kind
+			  }
+			| undefined
+
+		// Currently only support generic types for lists.
+		const genericOf =
+			(this.#namespace.defToKind(tag.defName) === Kind.List &&
+				tag.get<HSymbol>('of')?.value) ||
+			''
+
+		if (genericOf) {
+			const genericKind = this.#namespace.defToKind(genericOf)
+
+			if (genericKind) {
+				typeInfo = {
+					type: this.resolveType(genericOf, genericKind),
+					kind: genericKind,
+				}
+			}
+		}
+
+		return typeInfo
+	}
+
+	/**
+	 * Resolve the type name using the existing symbol name and kind.
+	 *
+	 * @param name The name.
+	 * @param kind The kind.
+	 * @returns The type name to use.
+	 */
+	private resolveType(name: string, kind: Kind): string {
+		// If the kind is a dict then we can map it to a generated dict interface.
+		// If the kind is not a dict then map it to its haystack type.
+		return kind === Kind.Dict && name !== 'dict'
+			? makeTypeName(name, this.#nameToDefCache)
+			: convertKindToCtorName(kind)
 	}
 
 	/**
