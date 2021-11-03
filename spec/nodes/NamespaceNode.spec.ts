@@ -26,7 +26,7 @@ export namespace Test {
 	/**
 	 * node
 	 */
-	export interface Node extends HDict {}
+	export type Node = HDict
 }
 `.trim()
 			)

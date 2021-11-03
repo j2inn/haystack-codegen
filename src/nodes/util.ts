@@ -65,8 +65,9 @@ export function generateNodes(
 		node.generateCode((code: string) => {
 			if (code) {
 				isEmpty = false
-				out(code)
 			}
+
+			out(code)
 		})
 
 		if (!isEmpty) {
@@ -94,31 +95,41 @@ export function generateCodeFromNode(node: Node): string {
 /**
  * Return a name that can be used as a type.
  *
- * @param name The name to create the type name from.
+ * @param def The def name to create a type name from.
+ * @param nameToDefCache A name to def cache.
  * @returns The type name.
  */
-export function makeTypeName(name: string): string {
-	if (!name) {
-		throw new Error(`Invalid interface name: ${name}`)
+export function makeTypeName(
+	def: string,
+	nameToDefCache: Record<string, string>
+): string {
+	if (!def) {
+		throw new Error(`Invalid interface name: ${def}`)
 	}
 
-	if (HNamespace.isConjunct(name)) {
-		name = HNamespace.splitConjunct(name)
+	let name = def
+
+	if (HNamespace.isConjunct(def)) {
+		name = HNamespace.splitConjunct(def)
 			.map((nm, i) => (i > 0 ? capitalizeFirstChar(nm) : nm))
 			.join('_')
+	} else if (HNamespace.isFeature(def)) {
+		name = def.split(':')[1]
 	}
 
-	if (HNamespace.isFeature(name)) {
-		name = name.split(':')[1]
+	name = capitalizeFirstChar(name)
+
+	if (RESERVED_NAMES.includes(name)) {
+		name = `I${name}`
 	}
 
-	let interfaceName = capitalizeFirstChar(name)
-
-	if (RESERVED_NAMES.includes(interfaceName)) {
-		interfaceName = `I${interfaceName}`
+	while (nameToDefCache[name] && nameToDefCache[name] !== def) {
+		name += '_'
 	}
 
-	return interfaceName
+	nameToDefCache[name] = def
+
+	return name
 }
 
 /**
@@ -191,8 +202,5 @@ export function writeDocComment(
 	out: (code: string) => void,
 	doc: string
 ): void {
-	if (doc.trim()) {
-		out(' *')
-		doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
-	}
+	doc.split('\n').forEach((line) => out(` * ${line.trim()}`))
 }

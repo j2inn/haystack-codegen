@@ -45,9 +45,27 @@ export class InterfaceNode implements Node {
 	public generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.def}`)
-		writeDocComment(out, this.doc)
+		if (this.doc.trim()) {
+			out(' *')
+			writeDocComment(out, this.doc)
+		}
 		out(' */')
 
+		if (this.values.length) {
+			this.generateInterface(out)
+		} else {
+			this.generateType(out)
+		}
+	}
+
+	public get types(): string[] {
+		return this.values.reduce(
+			(types, valNode): string[] => types.concat(valNode.types),
+			[] as string[]
+		)
+	}
+
+	private generateInterface(out: (code: string) => void): void {
 		let code = `export interface ${this.name} extends ${
 			this.extend.length ? this.extend[0] : 'HDict'
 		}`
@@ -56,15 +74,26 @@ export class InterfaceNode implements Node {
 			code += `, ${this.extend[i]}`
 		}
 
-		code += ` {${this.values.length ? '' : '}'}`
+		code += ` {`
 		out(code)
-		if (this.values.length) {
-			generateNodes(out, this.values)
-			out('}')
-		}
+
+		// The last value shouldn't have any new lines after it.
+		this.values.forEach(
+			(val, i) => (val.newLines = i === this.values.length - 1 ? 0 : 1)
+		)
+
+		generateNodes(out, this.values)
+		out('}')
 	}
 
-	public get types(): string[] {
-		return this.values.map((valNode) => valNode.type)
+	private generateType(out: (code: string) => void): void {
+		let code = `export type ${this.name} = ${
+			this.extend.length ? this.extend[0] : 'HDict'
+		}`
+
+		for (let i = 1; i < this.extend.length; ++i) {
+			code += ` & ${this.extend[i]}`
+		}
+		out(code)
 	}
 }

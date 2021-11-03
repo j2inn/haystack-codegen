@@ -2,13 +2,24 @@
  * Copyright (c) 2021, J2 Innovations. All Rights Reserved
  */
 
-import { HNamespace, HStr, HDict, HSymbol } from 'haystack-core'
+import {
+	HNamespace,
+	HStr,
+	HDict,
+	HSymbol,
+	valueIsKind,
+	Kind,
+} from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
 import { InterfaceValueNode } from './nodes/InterfaceValueNode'
 import { NamespaceNode } from './nodes/NamespaceNode'
 import { TypeGuardNode } from './nodes/TypeGuardNode'
-import { generateCodeFromNode, makeTypeName } from './nodes/util'
+import {
+	convertKindToCtorName,
+	generateCodeFromNode,
+	makeTypeName,
+} from './nodes/util'
 
 /**
  * Reserved words for features.
@@ -43,6 +54,11 @@ export class CodeGenerator {
 	readonly #typeGuardOptions: TypeGuardOptions
 
 	/**
+	 * A name to def cache.
+	 */
+	#nameToDefCache: Record<string, string> = {}
+
+	/**
 	 * Construct a new code generator.
 	 *
 	 * @param names The names of the defs to generate the code for.
@@ -69,8 +85,9 @@ export class CodeGenerator {
 	 */
 	public generate(): string {
 		const doc = new DocNode()
+		this.#nameToDefCache = {}
 
-		for (const name of this.removeDuplicates(this.#names)) {
+		for (const name of this.sortNamesAndFeatures()) {
 			if (!this.#namespace.has(name)) {
 				throw new Error(`Could not find def for ${name}`)
 			}
@@ -79,6 +96,27 @@ export class CodeGenerator {
 		}
 
 		return generateCodeFromNode(doc)
+	}
+
+	/**
+	 * Sort alphabetically by names and then features.
+	 *
+	 * @returns The def names.
+	 */
+	private sortNamesAndFeatures(): string[] {
+		// It's nice not to have underscores added to the end of the non-feature
+		// names (duplicates). Therefore process non-feature defs first.
+
+		const names = this.removeDuplicates(this.#names)
+		const features: string[] = []
+
+		for (let i = names.length; i >= 0; --i) {
+			if (HNamespace.isFeature(names[i])) {
+				features.push(names.splice(i, 1)[0])
+			}
+		}
+
+		return [...names.sort(), ...features.sort()]
 	}
 
 	/**
@@ -91,9 +129,13 @@ export class CodeGenerator {
 		const tags = this.#namespace.tags(name)
 		const def = this.#namespace.byName(name)
 
+		if (def) {
+			this.addLib(def, doc)
+		}
+
 		const intNode = new InterfaceNode({
 			def: name,
-			name: makeTypeName(name),
+			name: makeTypeName(name, this.#nameToDefCache),
 			doc: def?.get<HStr>('doc')?.value ?? '',
 		})
 
@@ -121,6 +163,23 @@ export class CodeGenerator {
 	}
 
 	/**
+	 * Add the lib for the def to the libs node.
+	 *
+	 * @param def The def.
+	 * @param doc The document node.
+	 */
+	private addLib(def: HDict, doc: DocNode): void {
+		const lib = def?.get('lib')
+		if (valueIsKind<HSymbol>(lib, Kind.Symbol)) {
+			const libDef = this.#namespace.get(lib)
+
+			if (libDef) {
+				doc.libs.addLib(libDef)
+			}
+		}
+	}
+
+	/**
 	 * Return true if the def is from the core project haystack library.
 	 *
 	 * @param def The def to test.
@@ -143,7 +202,7 @@ export class CodeGenerator {
 		intNode: InterfaceNode
 	): void {
 		for (const sup of this.#namespace.superTypesOf(name)) {
-			intNode.extend.push(makeTypeName(sup.defName))
+			intNode.extend.push(makeTypeName(sup.defName, this.#nameToDefCache))
 			this.addInterface(sup.defName, doc)
 		}
 	}
@@ -160,25 +219,94 @@ export class CodeGenerator {
 		tags: HDict[],
 		intNode: InterfaceNode
 	): void {
-		// Add all tags that relate to this def.
+		// Ensure's no tag is added twice for a node.
+		const tagSet = new Set<HDict>()
+
 		for (const tag of tags) {
 			for (const tagOn of this.#namespace.tagOn(tag.defName)) {
 				if (
 					tagOn.defName === name &&
-					!this.propertyAlreadyExistOnHDict(tag.defName)
+					!this.propertyAlreadyExistOnHDict(tag.defName) &&
+					!tagSet.has(tag)
 				) {
 					const kind = this.#namespace.defToKind(tag.defName)
 
 					const optional = !tag.has('mandatory')
 
 					if (kind) {
+						tagSet.add(tag)
+
+						const genericInfo = this.resolveGenericInfo(tag)
+
 						intNode.values.push(
-							new InterfaceValueNode(tag.defName, kind, optional)
+							new InterfaceValueNode({
+								name: tag.defName,
+								type: this.resolveType(tag.defName, kind),
+								kind,
+								doc: tag.get<HStr>('doc')?.value,
+								genericType: genericInfo?.type,
+								genericKind: genericInfo?.kind,
+								optional,
+							})
 						)
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Return the generic type for the given tag.
+	 *
+	 * @param tag The tag to resolve the generic parameter from.
+	 * @return The generic parameter or an empty string if one can't be resolved.
+	 */
+	private resolveGenericInfo(tag: HDict):
+		| {
+				type: string
+				kind: Kind
+		  }
+		| undefined {
+		let typeInfo:
+			| {
+					type: string
+					kind: Kind
+			  }
+			| undefined
+
+		// Currently only support generic types for lists.
+		const genericOf =
+			(this.#namespace.defToKind(tag.defName) === Kind.List &&
+				tag.get<HSymbol>('of')?.value) ||
+			''
+
+		if (genericOf) {
+			const genericKind = this.#namespace.defToKind(genericOf)
+
+			if (genericKind) {
+				typeInfo = {
+					type: this.resolveType(genericOf, genericKind),
+					kind: genericKind,
+				}
+			}
+		}
+
+		return typeInfo
+	}
+
+	/**
+	 * Resolve the type name using the existing symbol name and kind.
+	 *
+	 * @param name The name.
+	 * @param kind The kind.
+	 * @returns The type name to use.
+	 */
+	private resolveType(name: string, kind: Kind): string {
+		// If the kind is a dict then we can map it to a generated dict interface.
+		// If the kind is not a dict then map it to its haystack type.
+		return kind === Kind.Dict && name !== 'dict'
+			? makeTypeName(name, this.#nameToDefCache)
+			: convertKindToCtorName(kind)
 	}
 
 	/**
@@ -218,11 +346,7 @@ export class CodeGenerator {
 	 */
 	private addTypeGuard(name: string, doc: DocNode): void {
 		doc.addTypeGuard(
-			new TypeGuardNode(
-				name,
-				makeTypeName(name),
-				this.#namespace.allSubTypesOf(name).map((def) => def.defName)
-			)
+			new TypeGuardNode(name, makeTypeName(name, this.#nameToDefCache))
 		)
 	}
 

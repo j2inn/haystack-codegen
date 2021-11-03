@@ -13,7 +13,13 @@ describe('InterfaceNode', function (): void {
 			const node = new InterfaceNode({
 				def: 'test',
 				name: 'Test',
-				values: [new InterfaceValueNode('test', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(
@@ -26,11 +32,37 @@ describe('InterfaceNode', function (): void {
 				def: 'dog',
 				name: 'Dog',
 				extend: ['Mammal'],
-				values: [new InterfaceValueNode('test', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(
 				'/**\n * dog\n */\nexport interface Dog extends Mammal {\n	test: HBool\n}\n'
+			)
+		})
+
+		it('generates an interface that extends an interface with a doc comment', function (): void {
+			const node = new InterfaceNode({
+				def: 'dog',
+				name: 'Dog',
+				extend: ['Mammal'],
+				values: [
+					new InterfaceValueNode({
+						name: 'test',
+						doc: 'doc comment',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
+				],
+			})
+
+			expect(generateCodeFromNode(node)).toBe(
+				'/**\n * dog\n */\nexport interface Dog extends Mammal {\n	/**\n	 * doc comment\n	 */\n	test: HBool\n}\n'
 			)
 		})
 
@@ -39,7 +71,13 @@ describe('InterfaceNode', function (): void {
 				def: 'dog',
 				name: 'Dog',
 				extend: ['Mammal', 'Pug'],
-				values: [new InterfaceValueNode('test', Kind.Bool)],
+				values: [
+					new InterfaceValueNode({
+						name: 'test',
+						type: 'HBool',
+						kind: Kind.Bool,
+					}),
+				],
 			})
 
 			expect(generateCodeFromNode(node)).toBe(

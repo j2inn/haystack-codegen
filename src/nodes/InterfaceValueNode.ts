@@ -4,7 +4,7 @@
 
 import { Kind } from 'haystack-core'
 import { Node } from './Node'
-import { convertKindToCtorName } from './util'
+import { convertKindToCtorName, writeDocComment } from './util'
 
 /**
  * Generates a value line in a TypeScript interface.
@@ -12,29 +12,77 @@ import { convertKindToCtorName } from './util'
 export class InterfaceValueNode implements Node {
 	public readonly name: string
 
+	public readonly doc: string
+
+	public readonly type: string
+
 	public readonly kind: Kind
+
+	public readonly genericType?: string
+
+	public readonly genericKind?: Kind
 
 	public readonly optional: boolean
 
-	public readonly newLines = 0
+	/**
+	 * The number of new lines after this node is set dynamically depending on its
+	 * position in the parent interface.
+	 */
+	public newLines = 1
 
-	public constructor(name: string, kind: Kind, optional = false) {
+	public constructor({
+		name,
+		type,
+		kind,
+		doc,
+		genericType,
+		genericKind,
+		optional,
+	}: {
+		name: string
+		type: string
+		kind: Kind
+		doc?: string
+		genericType?: string
+		genericKind?: Kind
+		optional?: boolean
+	}) {
 		this.name = name
+		this.type = type
 		this.kind = kind
-		this.optional = optional
+		this.doc = doc ?? ''
+		this.genericType = genericType
+		this.genericKind = genericKind
+		this.optional = !!optional
 	}
 
 	public generateCode(out: (code: string) => void): void {
-		out(`	${this.name}${this.optional ? '?' : ''}: ${this.type}`)
+		if (this.doc.trim()) {
+			out('	/**')
+			writeDocComment((code: string): void => out(`	${code}`), this.doc)
+			out('	 */')
+		}
+
+		out(
+			`	${this.name}${this.optional ? '?' : ''}: ${this.type}${
+				this.genericType ? `<${this.genericType}>` : ''
+			}`
+		)
 	}
 
 	/**
-	 * Returns the haystack value's constructor name based on the kind.
+	 * Returns the types (haystack-core constructor names) used with this node.
 	 *
 	 * @param kind The kind.
-	 * @returns The TypeScript haystack value's name.
+	 * @returns The TypeScript haystack constructor names.
 	 */
-	public get type(): string {
-		return convertKindToCtorName(this.kind)
+	public get types(): string[] {
+		const types = [convertKindToCtorName(this.kind)]
+
+		if (this.genericKind) {
+			types.push(convertKindToCtorName(this.genericKind))
+		}
+
+		return types
 	}
 }
