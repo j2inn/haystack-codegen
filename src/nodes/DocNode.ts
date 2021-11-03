@@ -6,7 +6,7 @@ import { HaystackCoreImportNode } from './HaystackCoreImportNode'
 import { Node } from './Node'
 import { InterfaceNode } from './InterfaceNode'
 import { generateNodes } from './util'
-import { DocCommentNode } from './DocCommentNode'
+import { DocHeaderNode } from './DocHeaderNode'
 import { NamespaceNode } from './NamespaceNode'
 import { TypeGuardNode } from './TypeGuardNode'
 import { LibsNode } from './LibsNode'
@@ -19,7 +19,7 @@ import { LibsNode } from './LibsNode'
 export class DocNode implements Node {
 	public readonly newLines = 0
 
-	public readonly comment = new DocCommentNode()
+	public readonly header = new DocHeaderNode()
 
 	public readonly import = new HaystackCoreImportNode()
 
@@ -45,7 +45,7 @@ export class DocNode implements Node {
 	public generateCode(out: (code: string) => void): void {
 		this.addAllValuesToImport()
 		generateNodes(out, [
-			this.comment,
+			this.header,
 			this.import,
 			this.libs,
 			...this.#nodes.values(),

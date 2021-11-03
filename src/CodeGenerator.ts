@@ -346,11 +346,7 @@ export class CodeGenerator {
 	 */
 	private addTypeGuard(name: string, doc: DocNode): void {
 		doc.addTypeGuard(
-			new TypeGuardNode(
-				name,
-				makeTypeName(name, this.#nameToDefCache),
-				this.#namespace.allSubTypesOf(name).map((def) => def.defName)
-			)
+			new TypeGuardNode(name, makeTypeName(name, this.#nameToDefCache))
 		)
 	}
 
