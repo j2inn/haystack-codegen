@@ -9,6 +9,7 @@ import {
 	HSymbol,
 	valueIsKind,
 	Kind,
+	HMarker,
 } from 'haystack-core'
 import { DocNode } from './nodes/DocNode'
 import { InterfaceNode } from './nodes/InterfaceNode'
@@ -222,35 +223,48 @@ export class CodeGenerator {
 		// Ensure's no tag is added twice for a node.
 		const tagSet = new Set<HDict>()
 
+		const def = this.#namespace.byName(name) as HDict
+		if (def.get('mandatory')?.equals(HMarker.make())) {
+			this.addValueNode(def, tagSet, intNode, /*optional*/ false)
+		}
+
 		for (const tag of tags) {
 			for (const tagOn of this.#namespace.tagOn(tag.defName)) {
-				if (
-					tagOn.defName === name &&
-					!this.propertyAlreadyExistOnHDict(tag.defName) &&
-					!tagSet.has(tag)
-				) {
-					const kind = this.#namespace.defToKind(tag.defName)
-
-					const optional = !tag.has('mandatory')
-
-					if (kind) {
-						tagSet.add(tag)
-
-						const genericInfo = this.resolveGenericInfo(tag)
-
-						intNode.values.push(
-							new InterfaceValueNode({
-								name: tag.defName,
-								type: this.resolveType(tag.defName, kind),
-								kind,
-								doc: tag.get<HStr>('doc')?.value,
-								genericType: genericInfo?.type,
-								genericKind: genericInfo?.kind,
-								optional,
-							})
-						)
-					}
+				if (tagOn.defName === name) {
+					this.addValueNode(tag, tagSet, intNode, /*optional*/ true)
 				}
+			}
+		}
+	}
+
+	private addValueNode(
+		tag: HDict,
+		tagSet: Set<HDict>,
+		intNode: InterfaceNode,
+		optional: boolean
+	): void {
+		if (
+			!this.propertyAlreadyExistOnHDict(tag.defName) &&
+			!tagSet.has(tag)
+		) {
+			const kind = this.#namespace.defToKind(tag.defName)
+
+			if (kind) {
+				tagSet.add(tag)
+
+				const genericInfo = this.resolveGenericInfo(tag)
+
+				intNode.values.push(
+					new InterfaceValueNode({
+						name: tag.defName,
+						type: this.resolveType(tag.defName, kind),
+						kind,
+						doc: tag.get<HStr>('doc')?.value,
+						genericType: genericInfo?.type,
+						genericKind: genericInfo?.kind,
+						optional,
+					})
+				)
 			}
 		}
 	}

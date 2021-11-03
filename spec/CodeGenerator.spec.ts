@@ -41,6 +41,7 @@ import {
 	HDict,
 	HStr,
 	HRef,
+	HMarker,
 	HNamespace,
 } from 'haystack-core'
 
@@ -95,6 +96,12 @@ export interface Entity extends Marker {
  * See \`docHaystack::Equips\` chapter.
  */
 export interface Equip extends Entity {
+	/**
+	 * Equipment asset.
+	 * See \`docHaystack::Equips\` chapter.
+	 */
+	equip: HMarker
+
 	/**
 	 * Reference to equip which contains this entity
 	 */
@@ -183,7 +190,15 @@ export function isAirHandlingEquip(value: unknown, namespace: HNamespace): value
  * heating, cooling, humidifying, dehumidifying, ventilating or circulating
  * the air.  See \`docHaystack::AHUs\` chapter.
  */
-export type Ahu = AirHandlingEquip
+export interface Ahu extends AirHandlingEquip {
+	/**
+	 * Air Handling Unit: An enclosure with a fan that delivers air to a space
+	 * via ductwork and performs one or more of the functions of cleaning,
+	 * heating, cooling, humidifying, dehumidifying, ventilating or circulating
+	 * the air.  See \`docHaystack::AHUs\` chapter.
+	 */
+	ahu: HMarker
+}
 
 /**
  * Returns true if the value is a ahu.
