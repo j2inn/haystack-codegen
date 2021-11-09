@@ -231,7 +231,11 @@ export class CodeGenerator {
 		for (const tag of tags) {
 			for (const tagOn of this.#namespace.tagOn(tag.defName)) {
 				if (tagOn.defName === name) {
-					this.addValueNode(tag, tagSet, intNode, /*optional*/ true)
+					const optional = !tag
+						.get('compulsory')
+						?.equals(HMarker.make())
+
+					this.addValueNode(tag, tagSet, intNode, optional)
 				}
 			}
 		}

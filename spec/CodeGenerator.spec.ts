@@ -3,7 +3,7 @@
  */
 
 import { CodeGenerator, TypeGuardOptions } from '../src/CodeGenerator'
-import { HDict, HList, HNamespace, HSymbol } from 'haystack-core'
+import { HDict, HList, HMarker, HNamespace, HSymbol } from 'haystack-core'
 import { DocHeaderNode } from '../src/nodes/DocHeaderNode'
 import { resolveDefaultNamespace } from '../src/namespace'
 
@@ -23,6 +23,15 @@ describe('CodeGenerator', function (): void {
 		})
 
 		it('generates a document for an ahu', function (): void {
+			namespace.grid.add(
+				new HDict({
+					def: HSymbol.make('compulsory'),
+					is: HSymbol.make('marker'),
+				})
+			)
+
+			namespace.byName('equipRef')?.set('compulsory', HMarker.make())
+
 			const code = new CodeGenerator({
 				names: ['ahu'],
 				namespace,
@@ -105,7 +114,7 @@ export interface Equip extends Entity {
 	/**
 	 * Reference to equip which contains this entity
 	 */
-	equipRef?: HRef
+	equipRef: HRef
 
 	/**
 	 * Reference to site which contains the entity
