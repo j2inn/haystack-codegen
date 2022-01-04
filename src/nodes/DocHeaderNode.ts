@@ -26,7 +26,9 @@ export class DocHeaderNode implements Node {
 		)
 		out(' */')
 		out('')
-		out('/* eslint @typescript-eslint/no-namespace: "off" */')
+		out(
+			'/* eslint @typescript-eslint/no-namespace: "off", @typescript-eslint/ban-types: "off" */'
+		)
 	}
 
 	public toDateString(): string {
