@@ -63,6 +63,14 @@ describe('makeTypeName()', function (): void {
 		expect(makeTypeName('date', {})).toBe('IDate')
 	})
 
+	it('returns an interface name for a Number', function (): void {
+		expect(makeTypeName('number', {})).toBe('INumber')
+	})
+
+	it('returns an interface name for a Symbol', function (): void {
+		expect(makeTypeName('symbol', {})).toBe('ISymbol')
+	})
+
 	it('returns an interface name for a conjunct', function (): void {
 		expect(makeTypeName('elec-meter', {})).toBe('Elec_Meter')
 	})

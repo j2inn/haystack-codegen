@@ -25,7 +25,9 @@ import {
 	HUri,
 } from 'haystack-core'
 
-const RESERVED_NAMES = [
+const RESERVED_NAMES = new Set<string>()
+
+;[
 	'Date',
 	'Kind',
 	'HBool',
@@ -47,7 +49,70 @@ const RESERVED_NAMES = [
 	'HNamespace',
 	'HUri',
 	'valueIsKind',
-]
+	'Number',
+	'Symbol',
+	'String',
+	'Array',
+	'Boolean',
+	'Function',
+	'AsyncFunction',
+	'Object',
+	'Array',
+	'Map',
+	'Set',
+	'BigInt',
+	'Blob',
+	'ArrayBuffer',
+	'BigInt64Array',
+	'BigUint64Array',
+	'Float32Array',
+	'Float64Array',
+	'Image',
+	'Int16Array',
+	'Int32Array',
+	'Int8Array',
+	'UInt16Array',
+	'UInt32Array',
+	'UInt8Array',
+	'Uint8ClampedArray',
+	'clearInterval',
+	'setInterval',
+	'clearTimeout',
+	'setTimeout',
+	'JSON',
+	'ServerWorker',
+	'URL',
+	'WeakSet',
+	'WeakMap',
+	'WeakRef',
+	'RegExp',
+	'Window',
+	'Undefined',
+	'Null',
+	'WebAssembly',
+	'URIError',
+	'TypeError',
+	'TypedArray',
+	'SyntaxError',
+	'SharedArrayBuffer',
+	'Reflect',
+	'ReferenceError',
+	'RangeError',
+	'Proxy',
+	'Promise',
+	'NaN',
+	'Math',
+	'isNaN',
+	'isFinite',
+	'Intl',
+	'InternalError',
+	'Infinity',
+	'eval',
+	'Error',
+	'DateView',
+	'Atomics',
+	'AggregateError',
+].forEach((name: string) => RESERVED_NAMES.add(name))
 
 /**
  * Generate the code string from a group of nodes.
@@ -119,7 +184,7 @@ export function makeTypeName(
 
 	name = capitalizeFirstChar(name)
 
-	if (RESERVED_NAMES.includes(name)) {
+	if (RESERVED_NAMES.has(name)) {
 		name = `I${name}`
 	}
 
