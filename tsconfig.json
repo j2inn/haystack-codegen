@@ -23,7 +23,8 @@
 		"esModuleInterop": true,
 		"paths": {
 			"*": ["node_modules/*", "src/types/*"]
-		}
+		},
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*", "spec/**/*"]
 }
