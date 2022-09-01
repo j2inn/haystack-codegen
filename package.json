@@ -74,7 +74,7 @@
 		"colors": "^1.4.0",
 		"commander": "^9.4.0",
 		"haystack-core": "^2.0.37",
-		"haystack-nclient": "^3.0.26",
+		"haystack-nclient": "^3.0.27",
 		"node-fetch": "^2.6.5"
 	},
 	"optionalDependencies": {
