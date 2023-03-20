@@ -73,8 +73,8 @@
 		"adm-zip": "^0.5.9",
 		"colors": "^1.4.0",
 		"commander": "^9.4.0",
-		"haystack-core": "^2.0.45",
-		"haystack-nclient": "^3.0.32",
+		"haystack-core": "^2.0.46",
+		"haystack-nclient": "^3.0.33",
 		"node-fetch": "^2.6.5"
 	},
 	"optionalDependencies": {
