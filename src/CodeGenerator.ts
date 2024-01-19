@@ -203,8 +203,22 @@ export class CodeGenerator {
 		intNode: InterfaceNode
 	): void {
 		for (const sup of this.#namespace.superTypesOf(name)) {
-			intNode.extend.push(makeTypeName(sup.defName, this.#nameToDefCache))
-			this.addInterface(sup.defName, doc)
+			let supDefName = sup.defName
+
+			// If a super type is dict then attempt to look up an an `of` to map
+			// to the intended type.
+			if (sup.defName === 'dict') {
+				const dictName = this.#namespace
+					.byName(name)
+					?.get<HSymbol>('of')?.value
+
+				if (dictName) {
+					supDefName = dictName
+				}
+			}
+
+			intNode.extend.push(makeTypeName(supDefName, this.#nameToDefCache))
+			this.addInterface(supDefName, doc)
 		}
 	}
 
