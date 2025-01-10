@@ -11,22 +11,22 @@ import { generateNodes, writeDocComment } from './util'
  * Generates a TypeScript namespace.
  */
 export class NamespaceNode implements Node {
-	public readonly name: string
+	readonly name: string
 
-	public readonly intNode: InterfaceNode
+	readonly intNode: InterfaceNode
 
-	public readonly doc: string
+	readonly doc: string
 
-	public readonly newLines = 2
+	readonly newLines = 2
 
-	public constructor(name: string, intNode: InterfaceNode, doc: string) {
+	constructor(name: string, intNode: InterfaceNode, doc: string) {
 		this.name = name
 		this.intNode = intNode
 		this.doc = doc
 		this.intNode.newLines = 0
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.name}`)
 		if (this.doc.trim()) {
@@ -39,11 +39,11 @@ export class NamespaceNode implements Node {
 		out('}')
 	}
 
-	public get values(): InterfaceValueNode[] {
+	get values(): InterfaceValueNode[] {
 		return this.intNode.values
 	}
 
-	public get types(): string[] {
+	get types(): string[] {
 		return this.intNode.types
 	}
 }

@@ -9,11 +9,11 @@ import { Node } from './Node'
  * Generates exported lib information.
  */
 export class LibsNode implements Node {
-	public readonly newLines = 1
+	readonly newLines = 1
 
 	readonly #libs = new Set<HDict>()
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		const libs = [...this.#libs]
 
 		out('/**')
@@ -41,7 +41,7 @@ export class LibsNode implements Node {
 	 *
 	 * @param lib The lib to add.
 	 */
-	public addLib(lib: HDict): void {
+	addLib(lib: HDict): void {
 		this.#libs.add(lib)
 	}
 }

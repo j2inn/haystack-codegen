@@ -9,20 +9,20 @@ import { capitalizeFirstChar } from '../nodes/util'
  * Generates a type guard for a type.
  */
 export class TypeGuardNode implements Node {
-	public readonly def: string
+	readonly def: string
 
-	public readonly name: string
+	readonly name: string
 
-	public readonly newLines = 1
+	readonly newLines = 1
 
-	public readonly types = ['HNamespace']
+	readonly types = ['HNamespace']
 
-	public constructor(def: string, name: string) {
+	constructor(def: string, name: string) {
 		this.def = def
 		this.name = name
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * Returns true if the value is a ${this.def}.`)
 		out(' *')

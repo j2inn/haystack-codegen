@@ -8,17 +8,17 @@ import { Node } from './Node'
  * Generates the imports from the haystack-core library.
  */
 export class HaystackCoreImportNode implements Node {
-	public readonly types = new Set<string>()
+	readonly types = new Set<string>()
 
-	public readonly newLines = 1
+	readonly newLines = 1
 
-	public constructor(types: string[] = []) {
+	constructor(types: string[] = []) {
 		for (const type of types) {
 			this.types.add(type)
 		}
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		if (this.types.size) {
 			const types = [...this.types.values()]
 

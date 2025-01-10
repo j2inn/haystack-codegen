@@ -65,7 +65,7 @@ export class CodeGenerator {
 	 * @param names The names of the defs to generate the code for.
 	 * @param namespace The defs namespace.
 	 */
-	public constructor({
+	constructor({
 		names,
 		namespace,
 		typeGuardOptions,
@@ -84,7 +84,7 @@ export class CodeGenerator {
 	 *
 	 * @returns The TypeScript code.
 	 */
-	public generate(): string {
+	generate(): string {
 		const doc = new DocNode()
 		this.#nameToDefCache = {}
 

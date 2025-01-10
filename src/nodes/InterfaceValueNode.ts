@@ -10,27 +10,27 @@ import { convertKindToCtorName, writeDocComment } from './util'
  * Generates a value line in a TypeScript interface.
  */
 export class InterfaceValueNode implements Node {
-	public readonly name: string
+	readonly name: string
 
-	public readonly doc: string
+	readonly doc: string
 
-	public readonly type: string
+	readonly type: string
 
-	public readonly kind: Kind
+	readonly kind: Kind
 
-	public readonly genericType?: string
+	readonly genericType?: string
 
-	public readonly genericKind?: Kind
+	readonly genericKind?: Kind
 
-	public readonly optional: boolean
+	readonly optional: boolean
 
 	/**
 	 * The number of new lines after this node is set dynamically depending on its
 	 * position in the parent interface.
 	 */
-	public newLines = 1
+	newLines = 1
 
-	public constructor({
+	constructor({
 		name,
 		type,
 		kind,
@@ -56,7 +56,7 @@ export class InterfaceValueNode implements Node {
 		this.optional = !!optional
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		if (this.doc.trim()) {
 			out('	/**')
 			writeDocComment((code: string): void => out(`	${code}`), this.doc)
@@ -76,7 +76,7 @@ export class InterfaceValueNode implements Node {
 	 * @param kind The kind.
 	 * @returns The TypeScript haystack constructor names.
 	 */
-	public get types(): string[] {
+	get types(): string[] {
 		const types = [convertKindToCtorName(this.kind)]
 
 		if (this.genericKind) {

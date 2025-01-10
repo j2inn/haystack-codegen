@@ -17,32 +17,32 @@ import { LibsNode } from './LibsNode'
  * This is the root node for a document.
  */
 export class DocNode implements Node {
-	public readonly newLines = 0
+	readonly newLines = 0
 
-	public readonly header = new DocHeaderNode()
+	readonly header = new DocHeaderNode()
 
-	public readonly import = new HaystackCoreImportNode()
+	readonly import = new HaystackCoreImportNode()
 
-	public readonly libs = new LibsNode()
+	readonly libs = new LibsNode()
 
 	readonly #nodes: Map<
 		string,
 		InterfaceNode | NamespaceNode | TypeGuardNode
 	> = new Map()
 
-	public addInterface(intNode: InterfaceNode): void {
+	addInterface(intNode: InterfaceNode): void {
 		this.#nodes.set(intNode.name, intNode)
 	}
 
-	public addNamespace(nsNode: NamespaceNode): void {
+	addNamespace(nsNode: NamespaceNode): void {
 		this.#nodes.set(`${nsNode.name}:${nsNode.intNode.name}`, nsNode)
 	}
 
-	public addTypeGuard(tgNode: TypeGuardNode): void {
+	addTypeGuard(tgNode: TypeGuardNode): void {
 		this.#nodes.set(`tg-${tgNode.name}`, tgNode)
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		this.addAllValuesToImport()
 		generateNodes(out, [
 			this.header,

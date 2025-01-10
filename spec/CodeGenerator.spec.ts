@@ -48,8 +48,8 @@ describe('CodeGenerator', function (): void {
 
 import {
 	HDict,
-	HStr,
 	HRef,
+	HStr,
 	HMarker,
 	HNamespace,
 } from 'haystack-core'
@@ -60,11 +60,11 @@ import {
 export const LIBS = [
 	{
 		name: 'lib:phIoT',
-		version: '3.9.10',
+		version: '3.9.15',
 	},
 	{
 		name: 'lib:ph',
-		version: '3.9.10',
+		version: '3.9.15',
 	},
 ]
 
@@ -84,18 +84,18 @@ export type Marker = HDict
  */
 export interface Entity extends Marker {
 	/**
-	 * Display name for an entity.
-	 * See \`docHaystack::Ontology#entities\` chapter.
-	 */
-	dis?: HStr
-
-	/**
 	 * Defines the unique identifier of an entity in system using a \`ref\` value
 	 * type. The scope of an entity is undefined, but must be unique with a
 	 * given system or project. This identifier may be used by other entities
 	 * for cross-referencing.  See \`docHaystack::Ontology#entities\` chapter.
 	 */
 	id?: HRef
+
+	/**
+	 * Display name for an entity.
+	 * See \`docHaystack::Ontology#entities\` chapter.
+	 */
+	dis?: HStr
 }
 
 /**
@@ -125,6 +125,11 @@ export interface Equip extends Entity {
 	 * Reference to space which contains this entity
 	 */
 	spaceRef?: HRef
+
+	/**
+	 * Reference to system
+	 */
+	systemRef?: HRef
 }
 
 /**
@@ -178,7 +183,39 @@ export interface Elec_Input extends Input {
  * Conditioning of air includes heating, cooling, humidification,
  * dehumidification, and ventilation. See \`docHaystack::AHUs\` chapter.
  */
-export type AirHandlingEquip = Equip & Air_Output & Elec_Input
+export interface AirHandlingEquip extends Equip, Air_Output, Elec_Input {
+	/**
+	 * Ability of air handling equip to adjust volume of air flow
+	 */
+	airVolumeAdjustability?: HMarker
+
+	/**
+	 * AHU delivery method of conditioned air to the zone
+	 */
+	ahuZoneDelivery?: HMarker
+
+	/**
+	 * Cold, hot, or neutral deck. Can be applied to 'ahu' equip if the AHU
+	 * is part of a 'dualDuct' or 'tripleDuct' system but only serves a single
+	 * deck type.
+	 */
+	ductDeck?: HMarker
+
+	/**
+	 * Ductwork configuration
+	 */
+	ductConfig?: HMarker
+
+	/**
+	 * Processed used to heat a substance
+	 */
+	heatingProcess?: HMarker
+
+	/**
+	 * Processed used to cool a substance
+	 */
+	coolingProcess?: HMarker
+}
 
 /**
  * Returns true if the value is a airHandlingEquip.
@@ -243,7 +280,7 @@ export function isAhu(value: unknown, namespace: HNamespace): value is Ahu {
 			namespace.grid.add(
 				new HDict({
 					def: HSymbol.make('getKind'),
-					is: new HList(HSymbol.make('marker')),
+					is: new HList([HSymbol.make('marker')]),
 					tagOn: new HList([HSymbol.make('site')]),
 				})
 			)

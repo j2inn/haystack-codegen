@@ -10,19 +10,19 @@ import { generateNodes, writeDocComment } from './util'
  * Generates a TypeScript interface.
  */
 export class InterfaceNode implements Node {
-	public readonly def: string
+	readonly def: string
 
-	public readonly name: string
+	readonly name: string
 
-	public readonly doc: string
+	readonly doc: string
 
-	public readonly extend: string[]
+	readonly extend: string[]
 
-	public readonly values: InterfaceValueNode[]
+	readonly values: InterfaceValueNode[]
 
-	public newLines = 1
+	newLines = 1
 
-	public constructor({
+	constructor({
 		def,
 		name,
 		doc,
@@ -42,7 +42,7 @@ export class InterfaceNode implements Node {
 		this.values = values ?? []
 	}
 
-	public generateCode(out: (code: string) => void): void {
+	generateCode(out: (code: string) => void): void {
 		out('/**')
 		out(` * ${this.def}`)
 		if (this.doc.trim()) {
@@ -58,7 +58,7 @@ export class InterfaceNode implements Node {
 		}
 	}
 
-	public get types(): string[] {
+	get types(): string[] {
 		return this.values.reduce(
 			(types, valNode): string[] => types.concat(valNode.types),
 			[] as string[]
