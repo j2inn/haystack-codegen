@@ -224,7 +224,9 @@ function readDicts(pod: Pod, path: string): HDict[] | undefined {
 				lowerPath.endsWith('.hayson.yml')
 			) {
 				dicts = []
-				for (const decoded of YAML.parse(text) as HaysonVal[]) {
+				for (const decoded of YAML.parseAllDocuments(text).map((doc) =>
+					doc.toJSON()
+				) as HaysonVal[]) {
 					dicts = dicts.concat(convertHaysonToDicts(decoded))
 				}
 			}
