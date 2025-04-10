@@ -14,12 +14,17 @@ import {
 	HLibDict,
 	HDict,
 	HLib,
+	HaysonVal,
+	makeValue,
+	valueIsKind,
+	Kind,
 } from 'haystack-core'
 import { readFile, readdir } from 'fs'
 import path from 'path'
 import { promisify } from 'util'
 import colors from 'colors/safe'
 import AdmZip from 'adm-zip'
+import YAML from 'yaml'
 
 const readFileAsync = promisify(readFile)
 const readdirAsync = promisify(readdir)
@@ -34,6 +39,8 @@ export async function resolveDefaultNamespace(): Promise<HNamespace> {
 	const grid = ZincReader.readValue(defsBuf.toString('utf-8')) as HGrid
 	return new HNamespace(grid)
 }
+
+const DEF_FILE_EXTS = ['.trio', '.hayson.yaml', '.hayson.yml', '.hayson.json']
 
 /**
  * Represents a POD file.
@@ -124,10 +131,13 @@ async function getPodToLibDefs(
 	const map = new Map<Pod, HLibDict>()
 
 	for (const pod of pods) {
-		const libTrio = pod.getAsset('lib/lib.trio')
+		for (const ext of DEF_FILE_EXTS) {
+			const dicts = readDicts(pod, `lib/lib${ext}`)
 
-		if (libTrio) {
-			map.set(pod, new TrioReader(libTrio).readDict() as HLibDict)
+			if (dicts?.length) {
+				map.set(pod, dicts[0] as HLibDict)
+				break
+			}
 		}
 	}
 
@@ -183,22 +193,69 @@ async function getPods(podDir: string, podFilter: string): Promise<Pod[]> {
  * @returns An array of def/defx dicts.
  */
 function readDictsFromPodLibFolder(pod: Pod): (HDefDict | HDefxDict)[] {
-	const trios = pod
-		.listFiles('lib')
-		.filter((path) => path.toLowerCase().endsWith('.trio'))
-		.map((path) => pod.getAsset(path))
+	const files = pod.listFiles('lib')
 
-	return trios
-		.filter((trio) => !!trio)
-		.map((trio) => {
-			try {
-				return new TrioReader(String(trio)).readAllDicts()
-			} catch (err) {
-				return []
-			}
+	return files
+		.filter((path) => {
+			const lowerPath = path.toLowerCase()
+			return DEF_FILE_EXTS.some((ext) => lowerPath.endsWith(ext))
 		})
+		.map((path): HDict[] => readDicts(pod, path) ?? [])
 		.reduce((dicts, prev): HDict[] => dicts.concat(prev), []) as (
 		| HDefDict
 		| HDefxDict
 	)[]
+}
+
+function readDicts(pod: Pod, path: string): HDict[] | undefined {
+	const text = pod.getAsset(path)
+	let dicts: HDict[] | undefined
+
+	if (text) {
+		const lowerPath = path.toLowerCase()
+
+		try {
+			if (lowerPath.endsWith('.trio')) {
+				dicts = new TrioReader(text).readAllDicts()
+			} else if (lowerPath.endsWith('.hayson.json')) {
+				dicts = convertHaysonToDicts(JSON.parse(text) as HaysonVal)
+			} else if (
+				lowerPath.endsWith('.hayson.yaml') ||
+				lowerPath.endsWith('.hayson.yml')
+			) {
+				dicts = []
+				for (const decoded of YAML.parse(text) as HaysonVal[]) {
+					dicts = dicts.concat(convertHaysonToDicts(decoded))
+				}
+			}
+		} catch (error) {
+			throw new Error(
+				`Error parsing '${pod.name}.pod:/${path}' - ${error}`
+			)
+		}
+	}
+
+	return dicts
+}
+
+function convertHaysonToDicts(hayson: HaysonVal): HDict[] {
+	const dicts: HDict[] = []
+
+	function read(value: HaysonVal): void {
+		if (value) {
+			const hval = makeValue(value)
+
+			if (valueIsKind<HDict>(hval, Kind.Dict)) {
+				dicts.push(hval)
+			}
+		}
+	}
+
+	if (Array.isArray(hayson)) {
+		hayson.forEach(read)
+	} else {
+		read(hayson)
+	}
+
+	return dicts
 }
