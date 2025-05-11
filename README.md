@@ -19,11 +19,11 @@ Generates TypeScript code for [haystack-core](https://github.com/j2inn/haystack-
 
 ## APIs
 
-Please click [here](http://j2-docs.s3-website-us-east-1.amazonaws.com/j2inn/haystack-codegen/index.html) for the API documentation.
+Please click [here](https://tu1lu98z65.execute-api.us-east-1.amazonaws.com/default/j2docs/j2inn/haystack-codegen/index.html) for the API documentation.
 
 ## Def docs
 
-Please click [here](http://j2-docs.s3-website-us-east-1.amazonaws.com/j2inn/haystack-codegen/modules/haystack_types.html) for the generated typedoc information for all defs.
+Please click [here](https://tu1lu98z65.execute-api.us-east-1.amazonaws.com/default/j2docs/j2inn/haystack-codegen/modules/haystack_types.html) for the generated typedoc information for all defs.
 
 ## Installation
 
